@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:order/config/common.dart';
+import 'package:order/utils/api_constants.dart';
 import 'package:order/utils/common_method.dart';
+import 'package:order/utils/network_dio/network_dio.dart';
 
 NetworkRepository networkRepository = NetworkRepository();
 
 class NetworkRepository {
   static final NetworkRepository _networkRepository =
       NetworkRepository._internal();
-  static final dataStorage = GetStorage();
-
   factory NetworkRepository() {
     return _networkRepository;
   }
@@ -16,20 +16,86 @@ class NetworkRepository {
 
   FocusNode searchFocus = FocusNode();
 
-  // userLogin(context, authUserData) async {
-  //   try {
-  //     final authUserResponse = await NetworkDioHttp.postDioHttpMethod(
-  //       context: context,
-  //       url: ApiAppConstants.apiEndPoint + ApiAppConstants.login,
-  //       data: authUserData,
-  //     );
-  //     debugPrint('\x1b[97m Response : $authUserResponse');
-  //     return checkResponse(
-  //         authUserResponse, LoginModel.fromJson(authUserResponse['body']));
-  //   } catch (e) {
-  //     CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
-  //   }
-  // }
+  Future userLogin(context, email, password) async {
+    try {
+      final authUserResponse = await NetworkDioHttp.getDioHttpMethod(
+        context: context,
+        url:
+            "${ApiAppConstants.apiEndPoint}${ApiAppConstants.login}?unm=$email&pwd=$password",
+      );
+      debugPrint('\x1b[97m Response : $authUserResponse');
+      return await authUserResponse['body'];
+    } catch (e) {
+      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      return e.toString();
+    }
+  }
+
+  Future orderList(context, fromDate, toDate) async {
+    final String? token = box!.get('token');
+    try {
+      final authUserResponse = await NetworkDioHttp.getDioHttpMethod(
+        context: context,
+        url:
+            "${ApiAppConstants.apiEndPoint}${ApiAppConstants.orderlist}?tkn=$token&fdt=$fromDate&tdt=$toDate",
+      );
+      debugPrint('\x1b[97m Response : $authUserResponse');
+      return await authUserResponse['body'];
+    } catch (e) {
+      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      return e.toString();
+    }
+  }
+
+  Future categoryApi(context, {catid, off}) async {
+    final String? token = box!.get('token');
+    try {
+      final authUserResponse = await NetworkDioHttp.getDioHttpMethod(
+        context: context,
+        url: catid != null
+            ? "${ApiAppConstants.apiEndPoint}${ApiAppConstants.category}?tkn=$token&catid=$catid=&act=Update&active=$off"
+            : "${ApiAppConstants.apiEndPoint}${ApiAppConstants.category}?tkn=$token&act=Show",
+      );
+      debugPrint('\x1b[97m Response : $authUserResponse');
+      return await authUserResponse['body'];
+    } catch (e) {
+      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      return e.toString();
+    }
+  }
+
+  Future toppingApi(context, {catid, off}) async {
+    final String? token = box!.get('token');
+    try {
+      final authUserResponse = await NetworkDioHttp.getDioHttpMethod(
+        context: context,
+        url: catid != null
+            ? "${ApiAppConstants.apiEndPoint}${ApiAppConstants.topping}?tkn=$token&catid=$catid=&act=Update&active=$off"
+            : "${ApiAppConstants.apiEndPoint}${ApiAppConstants.topping}?tkn=$token&act=Show",
+      );
+      debugPrint('\x1b[97m Response : $authUserResponse');
+      return await authUserResponse['body'];
+    } catch (e) {
+      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      return e.toString();
+    }
+  }
+
+  Future orderDetails(context, oid) async {
+    final String? token = box!.get('token');
+    try {
+      final authUserResponse = await NetworkDioHttp.getDioHttpMethod(
+        context: context,
+        url:
+            "${ApiAppConstants.apiEndPoint}${ApiAppConstants.orderdetails}?tkn=$token&oid=$oid",
+      );
+      debugPrint('\x1b[97m Response : $authUserResponse');
+      return await authUserResponse['body'];
+    } catch (e) {
+      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      return e.toString();
+    }
+  }
 
   Future<void> checkResponse(
     response,

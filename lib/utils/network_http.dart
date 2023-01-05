@@ -4,15 +4,14 @@ import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
+import 'package:order/config/common.dart';
 import 'package:order/utils/process_indicator.dart';
 
 class NetworkHttp {
   static Circle processIndicator = Circle();
-  static final dataStorage = GetStorage();
-  static final String? token = dataStorage.read('token');
+  static final String? token = box!.get('token');
   // static ProgressDialog pr;
   static Future<Map<String, String>> getHeaders() async {
     if (token != null) {

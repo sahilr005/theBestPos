@@ -1,10 +1,37 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:order/controller/topping.dart';
+import 'package:order/utils/common_method.dart';
+import 'package:order/utils/repository/network_repository.dart';
 
-class ToppingMasterScreen extends StatelessWidget {
+class ToppingMasterScreen extends StatefulWidget {
   const ToppingMasterScreen({super.key});
+
+  @override
+  State<ToppingMasterScreen> createState() => _ToppingMasterScreenState();
+}
+
+class _ToppingMasterScreenState extends State<ToppingMasterScreen> {
+  List toppingData = [];
+  topping(context) async {
+    var res = await networkRepository.toppingApi(context);
+    if (res["toppings"] != null) {
+      toppingData = res["toppings"];
+      setState(() {});
+    } else {
+      CommonMethod().getXSnackBar('Error', res["status"], Colors.red);
+    }
+  }
+
+  toppingUpdate(context, {status}) async {
+    await networkRepository.toppingApi(context, off: status);
+    topping(context);
+  }
+
+  @override
+  void initState() {
+    Future.delayed(Duration.zero, () => topping(context));
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,44 +40,38 @@ class ToppingMasterScreen extends StatelessWidget {
         centerTitle: true,
         title: const Text("Topping Master"),
       ),
-      body: GetBuilder<ToppingController>(
-          init: ToppingController(),
-          builder: (controller) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Center(
-                child: Card(
-                  child: DataTable(
-                    columns: const [
-                      DataColumn(
-                        label: Text('Name'),
-                      ),
-                      DataColumn(
-                        label: Text('Status'),
-                      ),
-                    ],
-                    rows: List<DataRow>.generate(
-                      3,
-                      (index) => DataRow(cells: [
-                        const DataCell(Text('Large')),
-                        DataCell(Row(
-                          children: [
-                            Text(controller.active ? "ON " : "OFF "),
-                            CupertinoSwitch(
-                                value: controller.active,
-                                onChanged: (value) {
-                                  controller.active = value;
-                                  controller.update();
-                                })
-                          ],
-                        )),
-                      ]),
-                    ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Center(
+              child: Card(
+                child: DataTable(
+                  dataRowHeight: 60,
+                  columns: const [
+                    DataColumn(label: Text('ItemID')),
+                    DataColumn(label: Text('Name')),
+                    DataColumn(label: Text('Status')),
+                  ],
+                  rows: List<DataRow>.generate(
+                    toppingData.length,
+                    (index) => DataRow(cells: [
+                      DataCell(Text(index.toString())),
+                      DataCell(Text(toppingData[index]["Name"].toString())),
+                      DataCell(CupertinoSwitch(
+                          value: toppingData[index]["active"] == "Y",
+                          onChanged: (value) {
+                            toppingUpdate(context, status: value ? "Y" : "N");
+                          })),
+                    ]),
                   ),
                 ),
               ),
-            );
-          }),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

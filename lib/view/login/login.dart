@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:order/config/common.dart';
 import 'package:order/controller/login_controller.dart';
-import 'package:order/view/home/home.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -56,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
-                              Get.offAll(() => const HomeScreen());
+                              controller.login(context);
                             },
                             child: const Text("Login"),
                           ),

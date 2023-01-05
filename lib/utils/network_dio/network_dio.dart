@@ -7,7 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity/connectivity.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:order/config/common.dart';
 import 'package:order/utils/repository/network_repository.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 import '../internet_error.dart';
@@ -21,11 +21,10 @@ class NetworkDioHttp {
   static DioCacheManager? _dioCacheManager;
   NetworkCheck networkCheck = NetworkCheck();
   static InternetError internetError = InternetError();
-  static final dataStorage = GetStorage();
   static NetworkRepository networkRepository = NetworkRepository();
 
   static Future<Map<String, String>> getHeaders() async {
-    final String? token = dataStorage.read('token');
+    final String? token = box!.get('token');
     log("Token :- $token");
     if (token != null) {
       debugPrint(
