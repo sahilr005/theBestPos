@@ -19,25 +19,10 @@ class NoData extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // lottieJson != null
-          // ?
-          Lottie.asset(
-            'assets/json/nodata.json',
-            height: 200,
-          ),
-          // : Image.asset(
-          //     'assets/gif/no-data.gif',
-          //   ),
-          const SizedBox(
-            height: 50,
-          ),
+          Lottie.asset('assets/json/nodata.json', height: 200),
           Text(
             'No Data Found'.toString(),
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-              color: Colors.white,
-            ),
+            style: const TextStyle(fontSize: 16),
           )
         ],
       ),

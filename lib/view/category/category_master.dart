@@ -1,10 +1,37 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:order/controller/category_controller.dart';
+import 'package:order/utils/common_method.dart';
+import 'package:order/utils/repository/network_repository.dart';
 
-class CategoryMasterScreen extends StatelessWidget {
+class CategoryMasterScreen extends StatefulWidget {
   const CategoryMasterScreen({super.key});
+
+  @override
+  State<CategoryMasterScreen> createState() => _CategoryMasterScreenState();
+}
+
+class _CategoryMasterScreenState extends State<CategoryMasterScreen> {
+  List categoryData = [];
+  category(context) async {
+    var res = await networkRepository.categoryApi(context);
+    if (res["categories"] != null) {
+      categoryData = res["categories"];
+      setState(() {});
+    } else {
+      CommonMethod().getXSnackBar('Error', res["status"], Colors.red);
+    }
+  }
+
+  categoryUpdate(context, {required String catid, status}) async {
+        await networkRepository.categoryApi(context, catid: catid, off: status);
+    category(context);
+  }
+
+  @override
+  void initState() {
+    Future.delayed(Duration.zero, () => category(context));
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,42 +40,40 @@ class CategoryMasterScreen extends StatelessWidget {
         title: const Text("Category Master"),
         centerTitle: true,
       ),
-      body: GetBuilder<CategoryController>(
-          init: CategoryController(),
-          builder: (controller) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 10),
-              child: Center(
-                child: Card(
-                  child: DataTable(
-                    columns: const [
-                      DataColumn(label: Text('ItemID')),
-                      DataColumn(label: Text('Name')),
-                      DataColumn(label: Text('Status')),
-                    ],
-                    rows: List<DataRow>.generate(
-                      3,
-                      (index) => DataRow(cells: [
-                        DataCell(Text(index.toString())),
-                        const DataCell(Text('Large')),
-                        DataCell(Row(
-                          children: [
-                            Text(controller.active ? "ON " : "OFF "),
-                            CupertinoSwitch(
-                                value: controller.active,
-                                onChanged: (value) {
-                                  controller.active = value;
-                                  controller.update();
-                                })
-                          ],
-                        )),
-                      ]),
-                    ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Center(
+              child: Card(
+                child: DataTable(
+                  dataRowHeight: 60,
+                  columns: const [
+                    DataColumn(label: Text('ItemID')),
+                    DataColumn(label: Text('Name')),
+                    DataColumn(label: Text('Status')),
+                  ],
+                  rows: List<DataRow>.generate(
+                    categoryData.length,
+                    (index) => DataRow(cells: [
+                      DataCell(Text(index.toString())),
+                      DataCell(Text(categoryData[index]["name"])),
+                      DataCell(CupertinoSwitch(
+                          value: categoryData[index]["active"] == "Y",
+                          onChanged: (value) {
+                            categoryUpdate(context,
+                                catid: categoryData[index]["catid"],
+                                status: value ? "Y" : "N");
+                          })),
+                    ]),
                   ),
                 ),
               ),
-            );
-          }),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

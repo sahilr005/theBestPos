@@ -73,7 +73,7 @@ class SelectOptions extends StatelessWidget {
         Card(
           child: ListTile(
             onTap: () {
-              Get.to(() => const OrderListScreen());
+              Get.to(() => OrderListScreen());
             },
             title: const Text("Order List"),
           ),
