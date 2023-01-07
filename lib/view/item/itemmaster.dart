@@ -3,9 +3,49 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:order/controller/item_controller.dart';
+import 'package:order/utils/common_method.dart';
+import 'package:order/utils/repository/network_repository.dart';
 
-class ItemMasterScreen extends StatelessWidget {
+class ItemMasterScreen extends StatefulWidget {
   const ItemMasterScreen({super.key});
+
+  @override
+  State<ItemMasterScreen> createState() => _ItemMasterScreenState();
+}
+
+class _ItemMasterScreenState extends State<ItemMasterScreen> {
+  ItemController controller = ItemController();
+  List itemList = [];
+
+  item(BuildContext context) async {
+    var res = await networkRepository.itemApi(context);
+    if (res["status"] == "failure") {
+      CommonMethod().getXSnackBar('Error', res["status"], Colors.red);
+    }
+    if (res["items"] != null) {
+      itemList = res["items"];
+      setState(() {});
+    }
+  }
+
+  itemUpdate(
+      {required BuildContext context, required status, required itemID}) async {
+    var res = await networkRepository.itemApi(context,
+        itemID: itemID, status: status);
+    if (res["status"] == "failure") {
+      CommonMethod().getXSnackBar('Error', res["status"], Colors.red);
+    }
+    if (res["status"] == "success") {
+     // ignore: use_build_context_synchronously
+     await item(context);
+    }
+  }
+
+  @override
+  void initState() {
+    item(context);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,52 +54,52 @@ class ItemMasterScreen extends StatelessWidget {
         title: const Text("Item Master"),
         centerTitle: true,
       ),
-      body: GetBuilder<ItemController>(
-          init: ItemController(),
-          builder: (controller) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 10),
-              child: SizedBox(
-                width: Get.width,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Card(
-                      child: DataTable(
-                        columns: const [
-                          DataColumn(
-                            label: Text('ItemID'),
-                          ),
-                          DataColumn(
-                            label: Text('Name'),
-                          ),
-                          DataColumn(
-                            label: Text('Status'),
-                          ),
-                        ],
-                        rows: List<DataRow>.generate(
-                          3,
-                          (index) => DataRow(cells: [
-                            const DataCell(Text('MCm173')),
-                            const DataCell(Text('Mango ')),
-                            DataCell(InkWell(
-                                onTap: () {
-                                  statusDialog(context, controller);
-                                },
-                                child: Text(controller.statusValue))),
-                          ]),
-                        ),
-                      ),
-                    ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Center(
+              child: Card(
+                child: DataTable(
+                  dataRowHeight: 60,
+                  columns: const [
+                    DataColumn(label: Text('ItemID')),
+                    DataColumn(label: Text('Name')),
+                    DataColumn(label: Text('Status')),
                   ],
+                  rows: List<DataRow>.generate(
+                    itemList.length,
+                    (index) => DataRow(cells: [
+                      DataCell(Text(itemList[index]["itemid"].toString())),
+                      DataCell(Text(itemList[index]["itemname"].toString())),
+                      DataCell(SizedBox(
+                        width: 20,
+                        child: CupertinoSwitch(
+                            value: itemList[index]["active"] == "Y",
+                            onChanged: (value) {
+                              itemUpdate(
+                                  context: context,
+                                  status: value ? "Y" : "N",
+                                  itemID: itemList[index]["itemid"]);
+                            }),
+                      )),
+                    ]),
+                  ),
                 ),
               ),
-            );
-          }),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
+  // DataCell(InkWell(
+  //     onTap: () {
+  //       statusDialog(context, controller);
+  //     },
+  //     child: Text(controller.statusValue))),
   Future<dynamic> statusDialog(
       BuildContext context, ItemController controller) {
     return showDialog(

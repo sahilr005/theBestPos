@@ -7,4 +7,7 @@ class ApiAppConstants {
   static const String orderdetails = 'order-api.php';
   static const String category = 'category-api.php';
   static const String topping = 'topping-api.php';
+  static const String item = 'item-api.php';
+  static const String sizebase = 'size-base-api.php';
+  static const String setSizebase = 'set-size-base.php';
 }

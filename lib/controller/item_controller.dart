@@ -9,4 +9,5 @@ class ItemController extends GetxController {
     "Until date",
     "Until we activate it again"
   ];
+
 }

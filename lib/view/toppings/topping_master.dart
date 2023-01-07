@@ -22,8 +22,8 @@ class _ToppingMasterScreenState extends State<ToppingMasterScreen> {
     }
   }
 
-  toppingUpdate(context, {status}) async {
-    await networkRepository.toppingApi(context, off: status);
+  toppingUpdate(context, {required name, required status}) async {
+    await networkRepository.toppingApi(context, name: name, off: status);
     topping(context);
   }
 
@@ -62,7 +62,9 @@ class _ToppingMasterScreenState extends State<ToppingMasterScreen> {
                       DataCell(CupertinoSwitch(
                           value: toppingData[index]["active"] == "Y",
                           onChanged: (value) {
-                            toppingUpdate(context, status: value ? "Y" : "N");
+                            toppingUpdate(context,
+                                name: toppingData[index]["Name"],
+                                status: value ? "Y" : "N");
                           })),
                     ]),
                   ),

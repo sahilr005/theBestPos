@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:order/config/common.dart';
 import 'package:order/utils/api_constants.dart';
@@ -64,15 +66,64 @@ class NetworkRepository {
     }
   }
 
-  Future toppingApi(context, {catid, off}) async {
+  Future toppingApi(context, {name, off}) async {
     final String? token = box!.get('token');
     try {
       final authUserResponse = await NetworkDioHttp.getDioHttpMethod(
         context: context,
-        url: catid != null
-            ? "${ApiAppConstants.apiEndPoint}${ApiAppConstants.topping}?tkn=$token&catid=$catid=&act=Update&active=$off"
+        url: name != null
+            ? "${ApiAppConstants.apiEndPoint}${ApiAppConstants.topping}?tkn=$token&act=Update&name=$name&active=$off"
             : "${ApiAppConstants.apiEndPoint}${ApiAppConstants.topping}?tkn=$token&act=Show",
       );
+      debugPrint('\x1b[97m Response : $authUserResponse');
+      return await authUserResponse['body'];
+    } catch (e) {
+      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      return e.toString();
+    }
+  }
+
+  Future itemApi(context, {itemID, status}) async {
+    final String? token = box!.get('token');
+    try {
+      final authUserResponse = await NetworkDioHttp.getDioHttpMethod(
+        context: context,
+        url: itemID != null
+            ? "${ApiAppConstants.apiEndPoint}${ApiAppConstants.item}?tkn=$token&itemid=$itemID&act=Update&active=$status"
+            : "${ApiAppConstants.apiEndPoint}${ApiAppConstants.item}?tkn=$token&act=Show",
+      );
+      debugPrint('\x1b[97m Response : $authUserResponse');
+      return await authUserResponse['body'];
+    } catch (e) {
+      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      return e.toString();
+    }
+  }
+
+  Future sizeApi(context) async {
+    final String? token = box!.get('token');
+    try {
+      final authUserResponse = await NetworkDioHttp.getDioHttpMethod(
+        context: context,
+        url:
+            "${ApiAppConstants.apiEndPoint}${ApiAppConstants.sizebase}?tkn=$token&act=Show",
+      );
+      debugPrint('\x1b[97m Response : $authUserResponse');
+      return await authUserResponse['body'];
+    } catch (e) {
+      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      return e.toString();
+    }
+  }
+
+  Future sizeUpdateApi(context, {required data}) async {
+    final String? token = box!.get('token');
+    try {
+      final authUserResponse = await NetworkDioHttp.postDioHttpMethod(
+          context: context,
+          url: "${ApiAppConstants.apiEndPoint}${ApiAppConstants.setSizebase}" +
+              "?tkn=$token",
+          data: data);
       debugPrint('\x1b[97m Response : $authUserResponse');
       return await authUserResponse['body'];
     } catch (e) {

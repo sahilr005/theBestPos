@@ -1,3 +1,4 @@
+import 'package:clay_containers/clay_containers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:order/config/common.dart';
@@ -16,6 +17,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Color baseColor = const Color(0xFFF2F2F2);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +52,18 @@ class _HomeScreenState extends State<HomeScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Image.asset("assets/logo.png", height: Get.height * .3),
+              height(20),
+              ClayContainer(
+                borderRadius: 10000,
+                color: baseColor,
+                height: 180,
+                width: 180,
+                depth: 15,
+                spread: 20,
+                // curveType: CurveType.convex,
+                child: Image.asset("assets/logo.png", height: Get.height * .3),
+              ),
+              height(20),
               const SelectOptions(),
             ],
           ),

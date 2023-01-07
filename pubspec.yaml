@@ -19,6 +19,7 @@ dependencies:
   awesome_dialog: ^3.0.2
   lottie: ^2.1.0
   dio_http_cache: ^0.3.0
+  clay_containers: ^0.3.2
   hive: ^2.2.3
 
 dev_dependencies:
