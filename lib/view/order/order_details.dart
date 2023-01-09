@@ -48,7 +48,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       body: orderDetailsData.isEmpty
           ? const Center()
           : Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.all(20),
               child: SingleChildScrollView(
                 child: Column(
                     children: orderDetailsData.isEmpty
@@ -186,7 +186,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           border: Border.all(),
           borderRadius: BorderRadius.circular(15),
         ),
-        margin: const EdgeInsets.all(10),
+        margin: const EdgeInsets.only(bottom: 25,left: 20,right: 20),
         padding: const EdgeInsets.all(10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

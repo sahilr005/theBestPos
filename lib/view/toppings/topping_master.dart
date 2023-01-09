@@ -41,7 +41,7 @@ class _ToppingMasterScreenState extends State<ToppingMasterScreen> {
         title: const Text("Topping Master"),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.all(20),
         child: ListView(
           shrinkWrap: true,
           children: [

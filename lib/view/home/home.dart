@@ -31,7 +31,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: BoxDecoration(color: appColor.withOpacity(0.2)),
                 child: Image.asset("assets/logo.png", height: Get.height * .3),
               ),
-              const SelectOptions(),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: SelectOptions(),
+              ),
             ],
           ),
         ),
@@ -48,22 +51,20 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
           child: Column(
             children: [
-              height(20),
               ClayContainer(
                 borderRadius: 10000,
                 color: baseColor,
                 height: 180,
                 width: 180,
                 depth: 15,
-                spread: 20,
-                // curveType: CurveType.convex,
+                spread: 10,
                 child: Image.asset("assets/logo.png", height: Get.height * .3),
               ),
-              height(20),
+              height(30),
               const SelectOptions(),
             ],
           ),
@@ -82,6 +83,7 @@ class SelectOptions extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       shrinkWrap: true,
+      padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
       children: [
         Card(

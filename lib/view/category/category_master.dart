@@ -41,7 +41,7 @@ class _CategoryMasterScreenState extends State<CategoryMasterScreen> {
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: ListView(
           shrinkWrap: true,
           children: [

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -74,7 +72,7 @@ class _SizeBaseScreenState extends State<SizeBaseScreen> {
                 init: SizeBaseController(),
                 builder: (controller) {
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.all(20),
                     child: Center(
                       child: ListView.builder(
                           itemCount: sizeList.length,

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:order/config/common.dart';
 import 'package:order/utils/api_constants.dart';
