@@ -18,37 +18,48 @@ class SizeBaseScreen extends StatefulWidget {
 class _SizeBaseScreenState extends State<SizeBaseScreen> {
   final String? token = box!.get('token');
   List sizeList = [];
-  List<Map> dataMap = [];
+  // List<Map> dataMap = [];
 
+  List one = [];
+  List two = [];
+  List three = [];
   sizesGet(BuildContext context) async {
     var res = await networkRepository.sizeApi(context);
-    dataMap = [];
     if (res["status"] == "failure") {
       CommonMethod().getXSnackBar('Error', res["status"], Colors.red);
     }
     if (res["sizes"] != null) {
       sizeList = res["sizes"];
+      List bidadd = [];
+      one = [];
+      two = [];
+      three = [];
       for (var index = 0; index < sizeList.length; index++) {
         for (var i = 0; i < sizeList[index]["bases"].length; i++) {
           if (sizeList[index]["bases"][i]["is_active"] == "1") {
-            dataMap.add({
-              "szid": sizeList[index]["szid"],
-              "bid": sizeList[index]["bases"][i]["bid"],
-            });
+            // dataMap.add({
+            //   "szid": sizeList[index]["szid"],
+            //   "bid": sizeList[index]["bases"][i]["bid"],
+            // });
+            if (sizeList[index]["szid"] == "1") {
+              one.add((sizeList[index]["bases"][i]["bid"].toString()));
+            } else if (sizeList[index]["szid"] == "2") {
+              two.add((sizeList[index]["bases"][i]["bid"].toString()));
+            } else if (sizeList[index]["szid"] == "3") {
+              three.add((sizeList[index]["bases"][i]["bid"].toString()));
+            }
           }
-          updateKey(
-              sizeList[index]["szid"], sizeList[index]["bases"][i]["bid"]);
         }
       }
       setState(() {});
     }
   }
 
-  sizeUpdate(BuildContext context) async {
+  sizeUpdate(BuildContext context, data) async {
     final String? token = box!.get('token');
 
-    var res = await networkRepository.sizeUpdateApi(context,
-        data: {"tkn": token.toString(), "sbarr": dataMap});
+    log("Api Send Data --- $data");
+    var res = await networkRepository.sizeUpdateApi(context, data: data);
     if (res["status"] == "failure") {
       CommonMethod().getXSnackBar('Error', res["status"], Colors.red);
     }
@@ -74,6 +85,7 @@ class _SizeBaseScreenState extends State<SizeBaseScreen> {
             child: GetBuilder<SizeBaseController>(
                 init: SizeBaseController(),
                 builder: (controller) {
+                  List bidadd = [];
                   return Padding(
                     padding: const EdgeInsets.all(20),
                     child: Center(
@@ -102,34 +114,7 @@ class _SizeBaseScreenState extends State<SizeBaseScreen> {
                                                 "1"
                                             ? "ON "
                                             : "OFF "),
-                                        CupertinoSwitch(
-                                            value: sizeList[index]["bases"][ind]
-                                                    ["is_active"] ==
-                                                "1",
-                                            onChanged: (value) {
-                                              if (!value) {
-                                                remove(
-                                                    sizeList[index]["szid"],
-                                                    sizeList[index]["bases"]
-                                                        [ind]["bid"]);
-                                              }
-
-                                              if (value) {
-                                                dataMap.add({
-                                                  "szid": sizeList[index]
-                                                      ["szid"],
-                                                  "bid": sizeList[index]
-                                                      ["bases"][ind]["bid"],
-                                                });
-                                                updateKey(
-                                                    sizeList[index]["szid"],
-                                                    sizeList[index]["bases"]
-                                                        [ind]["bid"]);
-                                              }
-                                              setState(() {});
-                                              log("Datamap -- $dataMap");
-                                              sizeUpdate(context);
-                                            }),
+                                        sizeSwitch(index, ind, context),
                                       ],
                                     )),
                                   ]);
@@ -141,51 +126,75 @@ class _SizeBaseScreenState extends State<SizeBaseScreen> {
                   );
                 }),
           ),
+          ElevatedButton(
+              onPressed: () {
+                // log(dataMap.toString());
+              },
+              child: const Text("data"))
         ],
       ),
     );
   }
 
-  Future updateKey(sid, bid) {
-    List va = [];
-    String a = sid;
-    for (var i = 0; i < dataMap.length; i++) {
-      if (a == dataMap[i]["szid"]) {
-        va.add(dataMap[i]["bid"]);
-        //  a = dataMap[i]["szid"];
-      } else {
-        log("message");
-      }
-      a = sid;
-    }
-    for (var i = 0; i < dataMap.length; i++) {
-      if (dataMap[i]["szid"] == sid) {
-        dataMap[i].update("bid",
-            (value) => va.toString().replaceAll("[", "").replaceAll("]", ""));
-        // a.add(dataMap[i]["bid"]);
-      }
-    }
-    log(dataMap.toString());
-    return Future.delayed(Duration.zero);
-  }
-
-  remove(sid, bid) {
-    for (var i = 0; i < dataMap.length; i++) {
-      if (dataMap[i]["szid"] == sid) {
-        List<String> qw = dataMap[i]["bid"].toString().split(", ");
-        if (qw.length > 1) {
-          for (var ii = 0; ii < qw.length; ii++) {
-            qw.remove(bid);
-            log("Remove BId -- $qw");
-            dataMap[i].update(
-                "bid",
-                (value) =>
-                    qw.toString().replaceAll("[", "").replaceAll("]", ""));
+  CupertinoSwitch sizeSwitch(int index, int ind, BuildContext context) {
+    return CupertinoSwitch(
+        value: sizeList[index]["bases"][ind]["is_active"] == "1",
+        onChanged: (value) {
+          log(index.toString());
+          if (!value) {
+            index == 0
+                ? one.remove(sizeList[index]["bases"][ind]["bid"].toString())
+                : index == 1
+                    ? two
+                        .remove(sizeList[index]["bases"][ind]["bid"].toString())
+                    : index == 2
+                        ? three.remove(
+                            sizeList[index]["bases"][ind]["bid"].toString())
+                        : null;
+            // dataMap.removeWhere((element) {
+            //     return element.toString() ==
+            //         {
+            //           "szid": sizeList[index]["szid"],
+            //           "bid": sizeList[index]["bases"][ind]["bid"],
+            //         }.toString();
+            //   });
           }
-        } else {
-          dataMap.removeAt(i);
-        }
-      }
-    }
+
+          if (value) {
+            index == 0
+                ? one.add(sizeList[index]["bases"][ind]["bid"].toString())
+                : index == 1
+                    ? two.add(sizeList[index]["bases"][ind]["bid"].toString())
+                    : index == 2
+                        ? three.add(
+                            sizeList[index]["bases"][ind]["bid"].toString())
+                        : null;
+
+            // dataMap.add({
+            //   "szid": sizeList[index]["szid"],
+            //   "bid": sizeList[index]["bases"][ind]["bid"],
+            // });
+          }
+
+          setState(() {});
+          sizeUpdate(context, {
+            "tkn": token.toString(),
+            "sbarr": [
+              {
+                "szid": (index + 1).toString(),
+                "bid": index == 0
+                    ? one.toString().replaceAll("[", "").replaceAll("]", "")
+                    : index == 1
+                        ? two.toString().replaceAll("[", "").replaceAll("]", "")
+                        : index == 2
+                            ? three
+                                .toString()
+                                .replaceAll("[", "")
+                                .replaceAll("]", "")
+                            : 3
+              }
+            ]
+          });
+        });
   }
 }
