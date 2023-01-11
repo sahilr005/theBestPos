@@ -47,6 +47,22 @@ class NetworkRepository {
     }
   }
 
+  Future repprtingCAll(context, fromDate, toDate) async {
+    final String? token = "f694826835bb5eb4abbe6ef3e2394236";
+    try {
+      final authUserResponse = await NetworkDioHttp.getDioHttpMethod(
+        context: context,
+        url:
+            "${ApiAppConstants.apiEndPoint}${ApiAppConstants.posOrder}?tkn=$token&fdt=$fromDate&tdt=$toDate",
+      );
+      debugPrint('\x1b[97m Response : $authUserResponse');
+      return await authUserResponse['body'];
+    } catch (e) {
+      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      return e.toString();
+    }
+  }
+
   Future categoryApi(context, {catid, off}) async {
     final String? token = box!.get('token');
     try {
@@ -119,7 +135,7 @@ class NetworkRepository {
     try {
       final authUserResponse = await NetworkDioHttp.postDioHttpMethod(
           context: context,
-          url: "${ApiAppConstants.apiEndPoint}${ApiAppConstants.setSizebase}" +
+          url: "${ApiAppConstants.apiEndPoint}${ApiAppConstants.setSizebase}"
               "?tkn=$token",
           data: data);
       debugPrint('\x1b[97m Response : $authUserResponse');

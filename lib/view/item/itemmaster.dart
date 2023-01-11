@@ -36,8 +36,8 @@ class _ItemMasterScreenState extends State<ItemMasterScreen> {
       CommonMethod().getXSnackBar('Error', res["status"], Colors.red);
     }
     if (res["status"] == "success") {
-     // ignore: use_build_context_synchronously
-     await item(context);
+      // ignore: use_build_context_synchronously
+      await item(context);
     }
   }
 

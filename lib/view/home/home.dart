@@ -6,6 +6,7 @@ import 'package:order/view/category/category_master.dart';
 import 'package:order/view/item/itemmaster.dart';
 import 'package:order/view/login/login.dart';
 import 'package:order/view/order/orderlist.dart';
+import 'package:order/view/reporting/reporting.dart';
 import 'package:order/view/sizebase/sizebase.dart';
 import 'package:order/view/toppings/topping_master.dart';
 
@@ -124,6 +125,14 @@ class SelectOptions extends StatelessWidget {
               Get.to(() => const CategoryMasterScreen());
             },
             title: const Text("Category Master"),
+          ),
+        ),
+        Card(
+          child: ListTile(
+            onTap: () {
+              Get.to(() => const ReportingScreen());
+            },
+            title: const Text("Reporting"),
           ),
         ),
       ],

@@ -1,5 +1,4 @@
 class ApiAppConstants {
-
   static String apiEndPoint = "https://esofttechnologies.com.au/restroapp/";
 
   static const String login = 'login-api.php';
@@ -10,4 +9,5 @@ class ApiAppConstants {
   static const String item = 'item-api.php';
   static const String sizebase = 'size-base-api.php';
   static const String setSizebase = 'set-size-base.php';
+  static const String posOrder = 'pos-orders-api.php';
 }

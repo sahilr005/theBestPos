@@ -89,17 +89,36 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemBuilder: (_, index) {
                                   return Card(
+                                    color: Colors.blue,
                                     child: Padding(
                                         padding: const EdgeInsets.all(15.0),
                                         child: Table(
                                           children: [
                                             TableRow(children: [
-                                              Text(orderDetailsData[0]["items"]
-                                                  [index]["WebItem"]),
-                                              Text(orderDetailsData[0]["items"]
-                                                  [index]["WebItemBase"]),
-                                              Text(orderDetailsData[0]["items"]
-                                                  [index]["WebItemPrice"]),
+                                              Text(
+                                                orderDetailsData[0]["items"]
+                                                    [index]["WebItem"],
+                                                style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Text(
+                                                orderDetailsData[0]["items"]
+                                                    [index]["WebItemBase"],
+                                                style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Text(
+                                                orderDetailsData[0]["items"]
+                                                    [index]["WebItemPrice"],
+                                                style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
                                             ]),
                                             TableRow(
                                                 children: orderDetailsData[0]
@@ -186,7 +205,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           border: Border.all(),
           borderRadius: BorderRadius.circular(15),
         ),
-        margin: const EdgeInsets.only(bottom: 25,left: 20,right: 20),
+        margin: const EdgeInsets.only(bottom: 25, left: 20, right: 20),
         padding: const EdgeInsets.all(10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

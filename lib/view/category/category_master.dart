@@ -23,7 +23,7 @@ class _CategoryMasterScreenState extends State<CategoryMasterScreen> {
   }
 
   categoryUpdate(context, {required String catid, status}) async {
-        await networkRepository.categoryApi(context, catid: catid, off: status);
+    await networkRepository.categoryApi(context, catid: catid, off: status);
     category(context);
   }
 

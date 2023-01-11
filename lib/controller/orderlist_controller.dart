@@ -27,6 +27,4 @@ class OrderListController extends GetxController {
       update();
     }
   }
-
-
 }

@@ -23,13 +23,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final String? token = box!.get('token');
     return GetMaterialApp(
-      title: 'Flutter',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          useMaterial3: true,
-          primarySwatch: Colors.pink,
-          fontFamily: "Cera Pro"),
-      home: token != null ? const HomeScreen() : const LoginScreen(),
-    );
+        title: 'Flutter',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+            useMaterial3: true,
+            primarySwatch: Colors.pink,
+            fontFamily: "Cera Pro"),
+        home: token != null ? const HomeScreen() : const LoginScreen());
   }
 }
