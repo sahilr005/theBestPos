@@ -1,6 +1,6 @@
 {
-    "name": "oreder",
-    "short_name": "oreder",
+    "name": "bestpos",
+    "short_name": "bestpos",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
