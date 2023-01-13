@@ -54,7 +54,7 @@ class _ReportingScreenState extends State<ReportingScreen> {
                             context: context,
                             initialDate: controller.fromDate,
                             firstDate: DateTime(2000),
-                            lastDate: DateTime(3000),
+                            lastDate: DateTime.now(),
                           ))!;
                           // ignore: use_build_context_synchronously
                           controller
@@ -83,22 +83,22 @@ class _ReportingScreenState extends State<ReportingScreen> {
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                InkWell(
-                                  onTap: () {
-                                    paymentDialog(controller, context);
-                                  },
-                                  child: Row(
-                                    children: [
-                                      if (controller.sortValue == 2)
-                                        Text(controller.paymentMode == 0
-                                            ? "All"
-                                            : controller.paymentMode == 1
-                                                ? "Cash"
-                                                : "eftpos"),
-                                      const Icon(Icons.arrow_drop_down)
-                                    ],
-                                  ),
-                                ),
+                                // if (controller.sortValue == 2)
+                                //   InkWell(
+                                //     onTap: () {
+                                //       paymentDialog(controller, context);
+                                //     },
+                                //     child: Row(
+                                //       children: [
+                                //         Text(controller.paymentMode == 0
+                                //             ? "All"
+                                //             : controller.paymentMode == 1
+                                //                 ? "Cash"
+                                //                 : "eftpos"),
+                                //         const Icon(Icons.arrow_drop_down)
+                                //       ],
+                                //     ),
+                                //   ),
                                 IconButton(
                                     onPressed: () {
                                       chartDialog(controller, context);
@@ -107,21 +107,22 @@ class _ReportingScreenState extends State<ReportingScreen> {
                               ],
                             ),
                           )),
-                    if (controller.sortValue == 2 &&
-                        controller.paymentMode == 2)
-                      eftposDataList(),
-                    if (controller.sortValue == 2 &&
-                        controller.paymentMode == 1)
-                      cashDataList(),
+                    // if (controller.sortValue == 2 &&
+                    //     controller.paymentMode == 2)
+                    //   eftposDataList(),
+                    // if (controller.sortValue == 2 &&
+                    //     controller.paymentMode == 1)
+                    //   cashDataList(),
                     if (controller.sortValue == 2 &&
                         controller.paymentMode == 0)
                       allPaymentList(),
-                    if (controller.reportingData.isNotEmpty &&
-                        controller.sortValue != 2)
-                      chartShow(),
+
                     height(10),
                     if (controller.reportingData.isEmpty) NoData(),
                     if (controller.sortValue != 2) analysisItem(),
+                    if (controller.reportingData.isNotEmpty &&
+                        controller.sortValue != 2)
+                      chartShow(),
                   ],
                 ),
               ),
@@ -144,7 +145,6 @@ class _ReportingScreenState extends State<ReportingScreen> {
                         width: 0.5),
                     children: [
                       TableRow(children: [
-                        Column(children: const []),
                         Column(children: const [
                           Text('Cash', style: TextStyle(fontSize: 16.0))
                         ]),
@@ -156,7 +156,6 @@ class _ReportingScreenState extends State<ReportingScreen> {
                         ]),
                       ]),
                       TableRow(children: [
-                        Column(children: const [Text('Order')]),
                         Column(children: [
                           Text(controller.orderCal()[3].length.toString())
                         ]),
@@ -169,9 +168,6 @@ class _ReportingScreenState extends State<ReportingScreen> {
                         ]),
                       ]),
                       TableRow(children: [
-                        Column(
-                          children: const [Text('Amount')],
-                        ),
                         Column(
                           children: [Text(controller.orderCal()[4].toString())],
                         ),
@@ -242,7 +238,7 @@ class _ReportingScreenState extends State<ReportingScreen> {
                       element == controller.categorySet.toList()[ind] ? 1 : 0)
                   .reduce((value, element) => value + element);
               amcl = controller
-                  .cal()[controller.categorySet.toList()[ind].toString()]
+                  .calMap[controller.categorySet.toList()[ind].toString()]
                   .toString()
                   .split(",");
               sum = amcl.fold<double>(0,
@@ -254,7 +250,7 @@ class _ReportingScreenState extends State<ReportingScreen> {
                   .reduce((value, element) => value + element);
 
               amcl = controller
-                  .itemCal()[controller.itemSet.toList()[ind].toString()]
+                  .itemMapCal[controller.itemSet.toList()[ind].toString()]
                   .toString()
                   .split(",");
               sum = amcl.fold<double>(0,
@@ -295,6 +291,8 @@ class _ReportingScreenState extends State<ReportingScreen> {
         List status = [];
         List item = [];
         double sum = 0.0;
+        double cashSum = 0.0;
+        double eftSum = 0.0;
 
         res = controller.orderList
             .map((element) =>
@@ -315,164 +313,51 @@ class _ReportingScreenState extends State<ReportingScreen> {
             .orderCal()[2][controller.orderSet.toList()[index].toString()]
             .toString()
             .split(",");
-        return Card(
-          color: Colors.blue.shade100,
-          child: ExpansionTile(
-            title: ListTile(
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                List.generate(status.length,
-                        (indd) => status[indd] == "3" ? "Eftpos" : "Cash")
-                    .toString()
-                    .replaceAll("]", "")
-                    .replaceAll("[", ""),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              subtitle: Text(controller.orderSet.toList()[index].toString()),
-              trailing: Text(sum.toPrecision(2).toString()),
-            ),
-            children: [
-              ListView.builder(
-                itemCount: item.length,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, itemIndex) {
-                  try {
-                    return ListTile(
-                      title: Text(item[itemIndex].toString()),
-                      trailing: Text(amcl[itemIndex].toString()),
-                      dense: true,
-                    );
-                  } catch (e) {
-                    return ListTile(
-                      title: Text(item[itemIndex].toString()),
-                      trailing: Text("".toString()),
-                      dense: true,
-                    );
-                  }
-                },
-              )
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  ListView cashDataList() {
-    return ListView.builder(
-      itemCount: controller.cashSet.length,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-        int res = 0;
-        List amcl = [];
-
-        List item = [];
-        double sum = 0.0;
-
-        res = controller.orderList
-            .map((element) =>
-                element == controller.cashSet.toList()[index] ? 1 : 0)
-            .reduce((value, element) => value + element);
-
-        amcl = controller
-            .orderCal()[0][controller.cashSet.toList()[index].toString()]
+        List time = controller
+            .orderCal()[7][controller.orderSet.toList()[index].toString()]
             .toString()
             .split(",");
-        sum = amcl.fold<double>(
+        Set statusName = {};
+        List cashAm = [];
+        List eftAm = [];
+        List.generate(
+            status.length,
+            (indd) => status[indd] == "3"
+                ? statusName.add("Eftpos")
+                : statusName.add("Cash"));
+        List.generate(
+            status.length,
+            (indd) => status[indd] == "3"
+                ? eftAm.add(amcl[indd])
+                : cashAm.add(amcl[indd]));
+        cashSum = cashAm.fold<double>(
             0, (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
-
-        item = controller
-            .orderCal()[2][controller.cashSet.toList()[index].toString()]
-            .toString()
-            .split(",");
-
-        return Card(
-          color: Colors.blue.shade100,
-          child: ExpansionTile(
-            title: ListTile(
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              title: const Text(
-                "Cash",
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              subtitle: Text(controller.cashSet.toList()[index].toString()),
-              trailing: Text(sum.toPrecision(2).toString()),
-            ),
-            children: [
-              ListView.builder(
-                itemCount: item.length,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, itemIndex) {
-                  try {
-                    return ListTile(
-                      title: Text(item[itemIndex].toString()),
-                      trailing: Text(amcl[itemIndex].toString()),
-                      dense: true,
-                    );
-                  } catch (e) {
-                    return ListTile(
-                      title: Text(item[itemIndex].toString()),
-                      trailing: Text("".toString()),
-                      dense: true,
-                    );
-                  }
-                },
-              )
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  ListView eftposDataList() {
-    return ListView.builder(
-      itemCount: controller.eftpoSet.length,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-        int res = 0;
-        List amcl = [];
-        List item = [];
-        double sum = 0.0;
-        res = controller.orderList
-            .map((element) =>
-                element == controller.eftpoSet.toList()[index] ? 1 : 0)
-            .reduce((value, element) => value + element);
-
-        amcl = controller
-            .orderCal()[0][controller.eftpoSet.toList()[index].toString()]
-            .toString()
-            .split(",");
-        sum = amcl.fold<double>(
+        eftSum = eftAm.fold<double>(
             0, (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
-
-        item = controller
-            .orderCal()[2][controller.eftpoSet.toList()[index].toString()]
-            .toString()
-            .split(",");
-
         return Card(
           color: Colors.blue.shade100,
           child: ExpansionTile(
             title: ListTile(
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              title: const Text(
-                "Eftpos",
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              subtitle: Text(controller.eftpoSet.toList()[index].toString()),
-              trailing: Text(sum.toPrecision(2).toString()),
-            ),
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  statusName.toString().replaceAll("}", "").replaceAll("{", ""),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Text(time[0].toString()),
+                // trailing: Text(sum.toPrecision(2).toString()),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (eftSum != 0 && cashSum != 0)
+                      Text(
+                          "${cashSum.toPrecision(2)},${eftSum.toPrecision(2)}"),
+                    if (eftSum == 0) Text(cashSum.toPrecision(2).toString()),
+                    if (cashSum == 0)
+                      Text(eftSum == 0 ? "" : eftSum.toPrecision(2).toString())
+                  ],
+                )),
             children: [
               ListView.builder(
                 itemCount: item.length,
@@ -500,6 +385,149 @@ class _ReportingScreenState extends State<ReportingScreen> {
       },
     );
   }
+
+  // ListView cashDataList() {
+  //   return ListView.builder(
+  //     itemCount: controller.cashSet.length,
+  //     shrinkWrap: true,
+  //     physics: const NeverScrollableScrollPhysics(),
+  //     itemBuilder: (context, index) {
+  //       int res = 0;
+  //       List amcl = [];
+
+  //       List item = [];
+  //       double sum = 0.0;
+
+  //       res = controller.orderList
+  //           .map((element) =>
+  //               element == controller.cashSet.toList()[index] ? 1 : 0)
+  //           .reduce((value, element) => value + element);
+
+  //       amcl = controller
+  //           .orderCal()[6][controller.cashSet.toList()[index].toString()]
+  //           .toString()
+  //           .split(",");
+  //       sum = amcl.fold<double>(
+  //           0, (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
+
+  //       item = controller
+  //           .orderCal()[5][controller.cashSet.toList()[index].toString()]
+  //           .toString()
+  //           .split(",");
+
+  //       return Card(
+  //         color: Colors.blue.shade100,
+  //         child: ExpansionTile(
+  //           title: ListTile(
+  //             dense: true,
+  //             contentPadding: EdgeInsets.zero,
+  //             title: const Text(
+  //               "Cash",
+  //               maxLines: 1,
+  //               overflow: TextOverflow.ellipsis,
+  //             ),
+  //             subtitle: Text(controller.cashSet.toList()[index].toString()),
+  //             trailing: Text(sum.toPrecision(2).toString()),
+  //           ),
+  //           children: [
+  //             ListView.builder(
+  //               itemCount: item.length,
+  //               shrinkWrap: true,
+  //               physics: const NeverScrollableScrollPhysics(),
+  //               itemBuilder: (context, itemIndex) {
+  //                 try {
+  //                   return ListTile(
+  //                     title: Text(item[itemIndex].toString()),
+  //                     trailing: Text(amcl[itemIndex].toString()),
+  //                     dense: true,
+  //                   );
+  //                 } catch (e) {
+  //                   return ListTile(
+  //                     title: Text(item[itemIndex].toString()),
+  //                     trailing: Text("".toString()),
+  //                     dense: true,
+  //                   );
+  //                 }
+  //               },
+  //             )
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+
+  // ListView eftposDataList() {
+  //   return ListView.builder(
+  //     itemCount: controller.eftpoSet.length,
+  //     shrinkWrap: true,
+  //     physics: const NeverScrollableScrollPhysics(),
+  //     itemBuilder: (context, index) {
+  //       int res = 0;
+  //       List amcl = [];
+  //       List item = [];
+  //       double sum = 0.0;
+  //       res = controller.orderList
+  //           .map((element) =>
+  //               element == controller.eftpoSet.toList()[index] ? 1 : 0)
+  //           .reduce((value, element) => value + element);
+
+  //       amcl = controller
+  //           .orderCal()[0][controller.eftpoSet.toList()[index].toString()]
+  //           .toString()
+  //           .split(",");
+  //       sum = amcl.fold<double>(
+  //           0, (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
+
+  //       item = controller
+  //           .orderCal()[2][controller.eftpoSet.toList()[index].toString()]
+  //           .toString()
+  //           .split(",");
+
+  //       return sum == 0
+  //           ? const SizedBox()
+  //           : Card(
+  //               color: Colors.blue.shade100,
+  //               child: ExpansionTile(
+  //                 title: ListTile(
+  //                   dense: true,
+  //                   contentPadding: EdgeInsets.zero,
+  //                   title: const Text(
+  //                     "Eftpos",
+  //                     maxLines: 1,
+  //                     overflow: TextOverflow.ellipsis,
+  //                   ),
+  //                   subtitle:
+  //                       Text(controller.eftpoSet.toList()[index].toString()),
+  //                   trailing: Text(sum.toPrecision(2).toString()),
+  //                 ),
+  //                 children: [
+  //                   ListView.builder(
+  //                     itemCount: item.length,
+  //                     shrinkWrap: true,
+  //                     physics: const NeverScrollableScrollPhysics(),
+  //                     itemBuilder: (context, itemIndex) {
+  //                       try {
+  //                         return ListTile(
+  //                           title: Text(item[itemIndex].toString()),
+  //                           trailing: Text(amcl[itemIndex].toString()),
+  //                           dense: true,
+  //                         );
+  //                       } catch (e) {
+  //                         return ListTile(
+  //                           title: Text(item[itemIndex].toString()),
+  //                           trailing: Text("".toString()),
+  //                           dense: true,
+  //                         );
+  //                       }
+  //                     },
+  //                   )
+  //                 ],
+  //               ),
+  //             );
+  //     },
+  //   );
+  // }
 
   ListTile shopSelect(BuildContext context) {
     return ListTile(
@@ -538,7 +566,7 @@ class _ReportingScreenState extends State<ReportingScreen> {
               .reduce((value, element) => value + element);
 
           amcl = controller
-              .cal()[controller.categorySet.toList()[index].toString()]
+              .calMap[controller.categorySet.toList()[index].toString()]
               .toString()
               .split(",");
           sum = amcl.fold<double>(
@@ -550,7 +578,7 @@ class _ReportingScreenState extends State<ReportingScreen> {
               .reduce((value, element) => value + element);
 
           amcl = controller
-              .itemCal()[controller.itemSet.toList()[index].toString()]
+              .itemMapCal[controller.itemSet.toList()[index].toString()]
               .toString()
               .split(",");
           sum = amcl.fold<double>(
@@ -559,12 +587,17 @@ class _ReportingScreenState extends State<ReportingScreen> {
         return Card(
             color: Colors.blue.shade100,
             child: ExpansionTile(
-              title: Text(
-                controller.sortValue == 0
-                    ? controller.categorySet.toList()[index].toString()
-                    : controller.itemSet.toList()[index].toString(),
-                style: const TextStyle(
-                    fontSize: 16.0, fontWeight: FontWeight.w500),
+              title: ListTile(
+                contentPadding: EdgeInsets.zero,
+                dense: true,
+                trailing: Text("\$${sum.toPrecision(2)}"),
+                title: Text(
+                  controller.sortValue == 0
+                      ? controller.categorySet.toList()[index].toString()
+                      : controller.itemSet.toList()[index].toString(),
+                  style: const TextStyle(
+                      fontSize: 16.0, fontWeight: FontWeight.w500),
+                ),
               ),
               children: <Widget>[
                 ListTile(
@@ -579,11 +612,6 @@ class _ReportingScreenState extends State<ReportingScreen> {
                           "${((res / controller.categoryList.length) * 100).toPrecision(2)}%")
                       : Text(
                           "${((res / controller.itemList.length) * 100).toPrecision(2)}%"),
-                  dense: true,
-                ),
-                ListTile(
-                  title: const Text("Amount"),
-                  trailing: Text("\$${sum.toPrecision(2)}"),
                   dense: true,
                 ),
                 ListTile(
@@ -680,6 +708,10 @@ class _ReportingScreenState extends State<ReportingScreen> {
                             }));
                     Get.back();
                   },
+                  trailing: controller.shopName ==
+                          controller.shopNameSet.toList()[index]
+                      ? const Icon(Icons.check)
+                      : null,
                   title: Text(controller.shopNameSet.toList()[index]),
                   dense: true,
                 );

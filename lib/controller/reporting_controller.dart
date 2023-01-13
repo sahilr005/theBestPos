@@ -6,13 +6,12 @@ import 'package:intl/intl.dart';
 import 'package:order/utils/repository/network_repository.dart';
 
 class ReportingController extends GetxController {
-  DateTime toDate = DateTime.now();
   DateTime fromDate = DateTime.now();
   int sortValue = 0;
   int paymentMode = 0;
   List reportingData = [];
   List shopData = [];
-  String? shopName;
+  String shopName = "";
   Set shopNameSet = {};
 
   Set categorySet = {};
@@ -28,21 +27,30 @@ class ReportingController extends GetxController {
   List orderAmount = [];
   List orderStatus = [];
   List orderItem = [];
+  List orderTime = [];
 
-  List cashList = [];
+  // Set cashSet = {};
+  // List cashList1 = [];
+  // List cashAmount = [];
+  // List cashStatus = [];
+  // List cashItem = [];
+
   List eftpoList = [];
-  // List cashList2 = [];
   Set eftpoSet = {};
-  Set cashSet = {};
 
+  List<double> amcl = [];
   double totalAmount = 0.0;
 
   Future<bool> shopNameGet(BuildContext context) async {
+    var date = DateTime.now();
+    var newDate = DateTime(date.year, date.month, date.day - 1);
     var tdt =
-        "${DateFormat.d().format(toDate)}-${DateFormat.M().format(toDate)}-${DateFormat.y().format(toDate)}";
+        "${DateFormat.d().format(newDate)}-${DateFormat.M().format(newDate)}-${DateFormat.y().format(newDate)}";
     var fdt =
-        "${DateFormat.d().format(fromDate)}-${DateFormat.M().format(fromDate)}-${DateFormat.y().format(fromDate)}";
+        "${DateFormat.d().format(newDate)}-${DateFormat.M().format(newDate)}-${DateFormat.y().format(newDate)}";
+    // "${DateFormat.d().format(fromDate)}-${DateFormat.M().format(fromDate)}-${DateFormat.y().format(fromDate)}";
     var res = await networkRepository.reportingCAll(context, fdt, tdt);
+
     if (res != null) {
       shopData = res;
 
@@ -79,6 +87,16 @@ class ReportingController extends GetxController {
     orderStatus = [];
     orderItem = [];
     eftpoList = [];
+    orderTime = [];
+    calMap = {};
+
+    // cashSet = {};
+    // cashList1 = [];
+    // cashAmount = [];
+    // cashStatus = [];
+    // cashItem = [];
+    itemMapCal = {};
+    amcl = [];
     totalAmount = 0.0;
     var res =
         await networkRepository.reportingShopCAll(context, fdt, tdt, shopName);
@@ -99,16 +117,18 @@ class ReportingController extends GetxController {
           orderList.add(reportingData[i]["ordno"]);
           orderStatus.add(reportingData[i]["status"]);
           orderItem.add(reportingData[i]["itemnm"]);
+          orderTime.add(reportingData[i]["otime"]);
           orderSet.add(reportingData[i]["ordno"]);
-          if (reportingData[i]["status"].toString() == "9") {
-            cashList.add(reportingData[i]);
-          } else {
-            eftpoList.add(reportingData[i]);
-          }
+          // if (reportingData[i]["status"].toString() == "9") {
+          //   cashList1.add(reportingData[i]);
+          // } else {
+          //   eftpoList.add(reportingData[i]);
+          // }
         }
-        cashCal();
-        cal();
-        itemCal();
+        // cashCal();
+        calMap = cal();
+        itemMapCal = itemCal();
+
         update();
       }
       update();
@@ -117,8 +137,8 @@ class ReportingController extends GetxController {
     return true;
   }
 
+  Map calMap = {};
   Map cal() {
-    Map map = {};
     List<double> amcl = [];
     for (var i = 0; i < categoryList.length; i++) {
       amcl.add(double.parse(categoryAmount
@@ -128,22 +148,22 @@ class ReportingController extends GetxController {
           .replaceAll("]", "")
           .split(",")[i]
           .toString()));
-      if (map.containsKey(categoryList[i])) {
-        map.update(categoryList[i], (value) {
+      if (calMap.containsKey(categoryList[i])) {
+        calMap.update(categoryList[i], (value) {
           return "${value + "," + categoryAmount[i]}";
         });
       } else {
-        map.addAll({categoryList[i]: categoryAmount[i]});
+        calMap.addAll({categoryList[i]: categoryAmount[i]});
       }
     }
     totalAmount = amcl.fold<double>(
         0, (prev, value) => prev + (double.parse(value.toString())));
 
-    return map;
+    return calMap;
   }
 
+  Map itemMapCal = {};
   Map itemCal() {
-    Map map = {};
     List<double> amcl = [];
     for (var i = 0; i < itemList.length; i++) {
       amcl.add(double.parse(itemAmount
@@ -153,37 +173,43 @@ class ReportingController extends GetxController {
           .replaceAll("]", "")
           .split(",")[i]
           .toString()));
-      if (map.containsKey(itemList[i])) {
-        map.update(itemList[i], (value) {
+      if (itemMapCal.containsKey(itemList[i])) {
+        itemMapCal.update(itemList[i], (value) {
           return "${value + "," + itemAmount[i]}";
         });
       } else {
-        map.addAll({itemList[i]: itemAmount[i]});
+        itemMapCal.addAll({itemList[i]: itemAmount[i]});
       }
     }
     totalAmount = amcl.fold<double>(
         0, (prev, value) => prev + (double.parse(value.toString())));
 
-    return map;
+    return itemMapCal;
   }
 
-  Map cashCal() {
-    for (var i = 0; i < cashList.length; i++) {
-      cashSet.add(cashList[i]["ordno"]);
-    }
-    for (var i = 0; i < eftpoList.length; i++) {
-      eftpoSet.add(eftpoList[i]["ordno"]);
-    }
-    Map map = {};
-    return map;
-  }
+  // Map cashCal() {
+  //   for (var i = 0; i < cashList1.length; i++) {
+  //     cashSet.add(cashList1[i]["ordno"]);
+  //     cashAmount.add(cashList1[i]["totamt"]);
+  //     // cashList.add(cashList1[i]["ordno"]);
+  //     cashStatus.add(cashList1[i]["status"]);
+  //     cashItem.add(cashList1[i]["itemnm"]);
+  //   }
+  //   log(cashSet.length.toString());
+  //   log("Cash Item ${cashItem.length}");
+
+  //   for (var i = 0; i < eftpoList.length; i++) {
+  //     eftpoSet.add(eftpoList[i]["ordno"]);
+  //   }
+  //   Map map = {};
+  //   return map;
+  // }
 
   List orderCal() {
-    Map map = {};
+    Map orderCalMap = {};
     Map statusMap = {};
     Map itemsMap = {};
-    List<double> amcl = [];
-
+    Map itemsTime = {};
     for (var i = 0; i < orderList.length; i++) {
       amcl.add(double.parse(orderAmount
           .toString()
@@ -192,12 +218,12 @@ class ReportingController extends GetxController {
           .replaceAll("]", "")
           .split(",")[i]
           .toString()));
-      if (map.containsKey(orderList[i])) {
-        map.update(orderList[i], (value) {
+      if (orderCalMap.containsKey(orderList[i])) {
+        orderCalMap.update(orderList[i], (value) {
           return "${value + "," + orderAmount[i]}";
         });
       } else {
-        map.addAll({orderList[i]: orderAmount[i]});
+        orderCalMap.addAll({orderList[i]: orderAmount[i]});
       }
 
       if (statusMap.containsKey(orderList[i])) {
@@ -215,6 +241,13 @@ class ReportingController extends GetxController {
       } else {
         itemsMap.addAll({orderList[i]: orderItem[i]});
       }
+      if (itemsTime.containsKey(orderList[i])) {
+        itemsTime.update(orderList[i], (value) {
+          return "${value + "," + orderTime[i]}";
+        });
+      } else {
+        itemsTime.addAll({orderList[i]: orderTime[i]});
+      }
     }
     totalAmount = amcl.fold<double>(
         0, (prev, value) => prev + (double.parse(value.toString())));
@@ -227,12 +260,35 @@ class ReportingController extends GetxController {
       }
     }
 
+    Map cashItemMap = {};
+    Map cashCalMap = {};
+
+    // for (var i = 0; i < cashList1.length; i++) {
+    //   if (cashCalMap.containsKey(cashList1[i])) {
+    //     cashCalMap.update(cashList1[i], (value) {
+    //       return "${value + "," + cashAmount[i]}";
+    //     });
+    //   } else {
+    //     cashCalMap.addAll({cashList1[i]: cashAmount[i]});
+    //   }
+    //   if (cashItemMap.containsKey(cashList1[i])) {
+    //     cashItemMap.update(cashList1[i], (value) {
+    //       return "${value + "," + cashItem[i]}";
+    //     });
+    //   } else {
+    //     cashItemMap.addAll({cashList1[i]: cashItem[i]});
+    //   }
+    // }
+
     return [
-      map,
-      statusMap,
-      itemsMap,
-      cashCount,
-      cashPayment.toPrecision(2),
+      orderCalMap, // === 0
+      statusMap, // === 1
+      itemsMap, // === 2
+      cashCount, // === 3
+      cashPayment.toPrecision(2), // === 4
+      cashItemMap, // === 5
+      cashCalMap, // === 6
+      itemsTime, //7
     ];
   }
 }
