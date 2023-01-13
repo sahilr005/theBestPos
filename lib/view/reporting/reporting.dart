@@ -169,7 +169,11 @@ class _ReportingScreenState extends State<ReportingScreen> {
                       ]),
                       TableRow(children: [
                         Column(
-                          children: [Text(controller.cashPayment.toString())],
+                          children: [
+                            Text(controller.cashPayment
+                                .toPrecision(2)
+                                .toString())
+                          ],
                         ),
                         Column(
                           children: [
