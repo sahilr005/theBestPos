@@ -53,8 +53,8 @@ class NetworkRepository {
       final authUserResponse = await NetworkDioHttp.getDioHttpMethod(
         context: context,
         url:
-            // "${ApiAppConstants.apiEndPoint}${ApiAppConstants.posOrder}?tkn=$token&fdt=$fromDate&tdt=$toDate&shopnm=$shopName",
-            "${ApiAppConstants.apiEndPoint}${ApiAppConstants.posOrder}?tkn=$token&fdt=19-03-2022&tdt=19-03-2022&shopnm=$shopName",
+            "${ApiAppConstants.apiEndPoint}${ApiAppConstants.posOrder}?tkn=$token&fdt=$fromDate&tdt=$toDate&shopnm=$shopName",
+            // "${ApiAppConstants.apiEndPoint}${ApiAppConstants.posOrder}?tkn=$token&fdt=19-03-2022&tdt=19-03-2022&shopnm=$shopName",
       );
       debugPrint('\x1b[97m Response : $authUserResponse');
       return await authUserResponse['body'];

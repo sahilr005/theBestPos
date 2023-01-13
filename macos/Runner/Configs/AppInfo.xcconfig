@@ -8,7 +8,7 @@
 PRODUCT_NAME = oreder
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.oreder
+PRODUCT_BUNDLE_IDENTIFIER = com.best.pos
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2023 com.example. All rights reserved.

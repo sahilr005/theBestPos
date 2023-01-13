@@ -35,6 +35,13 @@ class ReportingController extends GetxController {
   // List cashStatus = [];
   // List cashItem = [];
 
+  Map orderCalMap = {};
+  Map statusMap = {};
+  Map itemsMap = {};
+  Map itemsTime = {};
+  List cashCount = [];
+  double cashPayment = 0;
+
   List eftpoList = [];
   Set eftpoSet = {};
 
@@ -90,6 +97,13 @@ class ReportingController extends GetxController {
     orderTime = [];
     calMap = {};
 
+    orderCalMap = {};
+    statusMap = {};
+    itemsMap = {};
+    itemsTime = {};
+    cashCount = [];
+    cashPayment = 0;
+
     // cashSet = {};
     // cashList1 = [];
     // cashAmount = [];
@@ -128,7 +142,7 @@ class ReportingController extends GetxController {
         // cashCal();
         calMap = cal();
         itemMapCal = itemCal();
-
+        orderCal();
         update();
       }
       update();
@@ -206,10 +220,12 @@ class ReportingController extends GetxController {
   // }
 
   List orderCal() {
-    Map orderCalMap = {};
-    Map statusMap = {};
-    Map itemsMap = {};
-    Map itemsTime = {};
+    orderCalMap = {};
+    statusMap = {};
+    itemsMap = {};
+    itemsTime = {};
+    cashCount = [];
+    cashPayment = 0;
     for (var i = 0; i < orderList.length; i++) {
       amcl.add(double.parse(orderAmount
           .toString()
@@ -251,8 +267,8 @@ class ReportingController extends GetxController {
     }
     totalAmount = amcl.fold<double>(
         0, (prev, value) => prev + (double.parse(value.toString())));
-    List cashCount = [];
-    double cashPayment = 0;
+    cashCount = [];
+    cashPayment = 0;
     for (var i = 0; i < orderStatus.length; i++) {
       if (orderStatus[i].toString() == "9") {
         cashCount.add(i);
@@ -288,7 +304,7 @@ class ReportingController extends GetxController {
       cashPayment.toPrecision(2), // === 4
       cashItemMap, // === 5
       cashCalMap, // === 6
-      itemsTime, //7
+      itemsTime, // === 7
     ];
   }
 }

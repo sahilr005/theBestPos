@@ -28,7 +28,11 @@ class _LoginScreenState extends State<LoginScreen> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    Image.asset("assets/logo.png", height: Get.height * .3),
+                    Image.asset(
+                      "assets/fwdposlogo/the-best-POS_final-logo.png",
+                      width: Get.width * .4,
+                      height: Get.height * .3,
+                    ),
                     TextField(
                       controller: controller.emailController,
                       keyboardType: TextInputType.emailAddress,

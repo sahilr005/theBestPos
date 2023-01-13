@@ -29,8 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: EdgeInsets.zero,
             children: <Widget>[
               DrawerHeader(
-                decoration: BoxDecoration(color: appColor.withOpacity(0.2)),
-                child: Image.asset("assets/logo.png", height: Get.height * .3),
+                // decoration: BoxDecoration(color: appColor.withOpacity(0.2)),
+                child: Image.asset("assets/fwdposlogo/the-best-POS_final-logo.png", height: Get.height * .3),
               ),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       appBar: AppBar(
-        title: const Text("App Name"),
+        title: const Text("THE BEST POS"),
         centerTitle: true,
         actions: [
           IconButton(
@@ -63,7 +63,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: 180,
                 depth: 15,
                 spread: 10,
-                child: Image.asset("assets/logo.png", height: Get.height * .3),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Image.asset(
+                    "assets/fwdposlogo/the-best-POS_final-logo.png",
+                  ),
+                ),
               ),
               height(30),
               const SelectOptions(),

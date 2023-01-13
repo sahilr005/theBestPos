@@ -1,9 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.oreder">
+    package="com.best.pos">
     <uses-permission android:name="android.permission.INTERNET"/>
 
    <application
-        android:label="oreder"
+        android:label="THE BEST POS"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity

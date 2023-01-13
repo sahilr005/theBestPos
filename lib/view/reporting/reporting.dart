@@ -157,11 +157,11 @@ class _ReportingScreenState extends State<ReportingScreen> {
                       ]),
                       TableRow(children: [
                         Column(children: [
-                          Text(controller.orderCal()[3].length.toString())
+                          Text(controller.cashCount.length.toString())
                         ]),
                         Column(children: [
                           Text(
-                              "${controller.orderStatus.length - controller.orderCal()[3].length}")
+                              "${controller.orderStatus.length - controller.cashCount.length}")
                         ]),
                         Column(children: [
                           Text(controller.orderList.length.toString())
@@ -169,12 +169,12 @@ class _ReportingScreenState extends State<ReportingScreen> {
                       ]),
                       TableRow(children: [
                         Column(
-                          children: [Text(controller.orderCal()[4].toString())],
+                          children: [Text(controller.cashPayment.toString())],
                         ),
                         Column(
                           children: [
                             Text((controller.totalAmount -
-                                    controller.orderCal()[4])
+                                    controller.cashPayment)
                                 .toPrecision(2)
                                 .toString())
                           ],
@@ -300,21 +300,21 @@ class _ReportingScreenState extends State<ReportingScreen> {
             .reduce((value, element) => value + element);
 
         amcl = controller
-            .orderCal()[0][controller.orderSet.toList()[index].toString()]
+            .orderCalMap[controller.orderSet.toList()[index].toString()]
             .toString()
             .split(",");
         sum = amcl.fold<double>(
             0, (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
         status = controller
-            .orderCal()[1][controller.orderSet.toList()[index].toString()]
+            .statusMap[controller.orderSet.toList()[index].toString()]
             .toString()
             .split(",");
         item = controller
-            .orderCal()[2][controller.orderSet.toList()[index].toString()]
+            .itemsMap[controller.orderSet.toList()[index].toString()]
             .toString()
             .split(",");
         List time = controller
-            .orderCal()[7][controller.orderSet.toList()[index].toString()]
+            .itemsTime[controller.orderSet.toList()[index].toString()]
             .toString()
             .split(",");
         Set statusName = {};
@@ -549,40 +549,84 @@ class _ReportingScreenState extends State<ReportingScreen> {
   }
 
   ListView analysisItem() {
-    return ListView.builder(
-      itemCount: controller.sortValue == 0
-          ? controller.categorySet.length
-          : controller.itemSet.length,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
+    // controller.categorySet.toList().sort((a, b) => a[""],)
+    Map data = {};
+    List sumList = [];
+    List recList = [];
+    int res = 0;
+    if (controller.sortValue == 0)
+      for (var i = 0; i < controller.categorySet.length; i++) {
         int res = 0;
         List amcl = [];
         double sum = 0.0;
+        res = controller.categoryList
+            .map((element) =>
+                element == controller.categorySet.toList()[i] ? 1 : 0)
+            .reduce((value, element) => value + element);
+
+        amcl = controller.calMap[controller.categorySet.toList()[i].toString()]
+            .toString()
+            .split(",");
+        sum = amcl.fold<double>(
+            0, (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
+        sumList.add(sum);
+        sumList.sort();
+        sumList = sumList.reversed.toList();
+
+        data = {
+          "1": res,
+          "2": amcl,
+          "3": sum,
+        };
+      }
+    for (var i = 0; i < sumList.length; i++) {
+      res = controller.itemList
+          .map((element) => element == controller.itemSet.toList()[i] ? 1 : 0)
+          .reduce((value, element) => value + element);
+      recList.add(res);
+    }
+
+    List sumList2 = [];
+    List recList2 = [];
+    int res2 = 0;
+    for (var i = 0; i < controller.itemSet.length; i++) {
+      List amcl = [];
+      double sum = 0.0;
+      amcl = controller.itemMapCal[controller.itemSet.toList()[i].toString()]
+          .toString()
+          .split(",");
+      sum = amcl.fold<double>(
+          0, (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
+      sumList2.add(sum);
+      sumList2.sort();
+      sumList2 = sumList2.reversed.toList();
+
+      data = {
+        "1": res,
+        "2": amcl,
+        "3": sum,
+      };
+    }
+    for (var i = 0; i < sumList2.length; i++) {
+      res2 = controller.itemList
+          .map((element) => element == controller.itemSet.toList()[i] ? 1 : 0)
+          .reduce((value, element) => value + element);
+      recList2.add(res2);
+    }
+    return ListView.builder(
+      itemCount: controller.sortValue == 0 ? sumList.length : sumList2.length,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        double summ = 0.0;
+        double persent = 0.0;
+        double salesP = (sumList2[index] / controller.totalAmount) * 100;
         if (controller.sortValue == 0) {
-          res = controller.categoryList
-              .map((element) =>
-                  element == controller.categorySet.toList()[index] ? 1 : 0)
-              .reduce((value, element) => value + element);
-
-          amcl = controller
-              .calMap[controller.categorySet.toList()[index].toString()]
-              .toString()
-              .split(",");
-          sum = amcl.fold<double>(
-              0, (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
+          summ = sumList[index];
+          persent = (recList[index] / controller.categoryList.length) * 100;
         } else {
-          res = controller.itemList
-              .map((element) =>
-                  element == controller.itemSet.toList()[index] ? 1 : 0)
-              .reduce((value, element) => value + element);
-
-          amcl = controller
-              .itemMapCal[controller.itemSet.toList()[index].toString()]
-              .toString()
-              .split(",");
-          sum = amcl.fold<double>(
-              0, (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
+          summ = sumList2[index];
+          persent = (recList2[index] / controller.itemList.length) * 100;
         }
         return Card(
             color: Colors.blue.shade100,
@@ -590,7 +634,7 @@ class _ReportingScreenState extends State<ReportingScreen> {
               title: ListTile(
                 contentPadding: EdgeInsets.zero,
                 dense: true,
-                trailing: Text("\$${sum.toPrecision(2)}"),
+                trailing: Text("\$${summ.toPrecision(2)}"),
                 title: Text(
                   controller.sortValue == 0
                       ? controller.categorySet.toList()[index].toString()
@@ -602,22 +646,17 @@ class _ReportingScreenState extends State<ReportingScreen> {
               children: <Widget>[
                 ListTile(
                   title: const Text("Qty. Sold"),
-                  trailing: Text(res.toString()),
+                  trailing: Text(recList2[index].toString()),
                   dense: true,
                 ),
                 ListTile(
                   title: const Text("% of Qty."),
-                  trailing: controller.sortValue == 0
-                      ? Text(
-                          "${((res / controller.categoryList.length) * 100).toPrecision(2)}%")
-                      : Text(
-                          "${((res / controller.itemList.length) * 100).toPrecision(2)}%"),
+                  trailing: Text("${persent.toPrecision(2)}%"), //
                   dense: true,
                 ),
                 ListTile(
                   title: const Text("	% of Sales"),
-                  trailing: Text(
-                      "${((sum / controller.totalAmount) * 100).toPrecision(2)}%"),
+                  trailing: Text("${salesP.toPrecision(2)}%"),
                   dense: true,
                 ),
               ],
