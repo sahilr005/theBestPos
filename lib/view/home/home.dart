@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       appBar: AppBar(
-        title: const Text("THE BEST POS"),
+        title: const Text("Cosmic POS Repo"),
         centerTitle: true,
         actions: [
           IconButton(
