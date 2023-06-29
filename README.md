@@ -1,16 +1,4 @@
+![Screenshot_1688032420](https://github.com/sahilr005/theBestPos/assets/76276129/081fec46-0cff-4f2b-b6f8-5c91c4171506)
 # bestpos
-
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![Uploading Screenshot_1688032410.png…]()
+![Uploading Screenshot_1688032314.png…]()
