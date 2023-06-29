@@ -21,8 +21,12 @@ class _ReportingScreenState extends State<ReportingScreen> {
   @override
   void initState() {
     Future.delayed(Duration.zero, () {
-      controller.shopNameGet(context).then((value) =>
-          {controller.reportingAPI(context).then((value) => setState(() {}))});
+      controller.shopNameGet(context).then((value) {
+        {
+          // controller.reportingAPI(context).then((value) => setState(() {}));
+          setState(() {});
+        }
+      });
     });
     super.initState();
   }
@@ -115,7 +119,8 @@ class _ReportingScreenState extends State<ReportingScreen> {
                     //   cashDataList(),
                     if (controller.sortValue == 2 &&
                         controller.paymentMode == 0)
-                      allPaymentList(),
+                      Obx(() =>
+                          allPaymentList(controller.reportingDataModel.value)),
 
                     height(10),
                     if (controller.reportingData.isEmpty) NoData(),
@@ -161,10 +166,10 @@ class _ReportingScreenState extends State<ReportingScreen> {
                         ]),
                         Column(children: [
                           Text(
-                              "${controller.orderStatus.length - controller.cashCount.length}")
+                              "${controller.orderSet.length - controller.cashCount.length}")
                         ]),
                         Column(children: [
-                          Text(controller.orderList.length.toString())
+                          Text(controller.orderSet.length.toString())
                         ]),
                       ]),
                       TableRow(children: [
@@ -177,8 +182,7 @@ class _ReportingScreenState extends State<ReportingScreen> {
                         ),
                         Column(
                           children: [
-                            Text((controller.totalAmount -
-                                    controller.cashPayment)
+                            Text((controller.eftPayment)
                                 .toPrecision(2)
                                 .toString())
                           ],
@@ -200,23 +204,38 @@ class _ReportingScreenState extends State<ReportingScreen> {
               ListTile(
                   dense: true,
                   title: const Text("Total Sales : "),
-                  trailing: Text(
-                    controller.totalAmount.toPrecision(2).toString(),
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
+                  subtitle: Text("Qty : "),
+                  trailing: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        controller.totalAmount.toPrecision(2).toString(),
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      Text(
+                        controller.orderSet.length.toString(),
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ],
                   )),
             if (controller.reportingData.isNotEmpty &&
                 controller.sortValue != 2)
               ListTile(
                 dense: true,
-                title: Text(
-                    controller.sortValue != 2 ? "Total Qty : " : "Total Order"),
+                title: Text(controller.sortValue == 0
+                    ? "Category : "
+                    : controller.sortValue != 2
+                        ? "Product : "
+                        : "Total Order"),
                 trailing: Text(
                   controller.sortValue == 0
-                      ? controller.categoryList.length.toString()
+                      ? controller.categorySet.length.toString()
                       : controller.sortValue == 1
-                          ? controller.itemList.length.toString()
-                          : controller.orderList.length.toString(),
+                          ? controller.itemSet.length.toString()
+                          : controller.orderSet.length.toString(),
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 16),
                 ),
@@ -284,110 +303,251 @@ class _ReportingScreenState extends State<ReportingScreen> {
     );
   }
 
-  ListView allPaymentList() {
+  allPaymentList(orders) {
+    // return Obx(
+    //   () => FutureBuilder<List<Order>>(
+    //     // future: _futureOrders,
+    //     initialData: controller.reportingDataModel.value,
+    //     builder: (context, snapshot) {
+    //       if (snapshot.hasData) {
+    //         List<Order> orders = snapshot.data!;
+
+    //         // Sort orders by payment method
+    //         orders.sort((a, b) {
+    //           if (a.cash > 0 && b.cash == 0) {
+    //             return -1; // a is cash, b is eftpos
+    //           } else if (a.cash == 0 && b.cash > 0) {
+    //             return 1; // a is eftpos, b is cash
+    //           } else {
+    //             return 0; // same payment method, maintain order
+    //           }
+    //         });
+
+    //         return ListView.builder(
+    //           itemCount: orders.length,
+    //           shrinkWrap: true,
+    //           physics: NeverScrollableScrollPhysics(),
+    //           itemBuilder: (context, index) {
+    //             Order order = orders[index];
+    //             String paymentMethod = order.cash > 0 ? 'Cash' : 'Eftpos';
+
+    //             // Group orders by order ID
+    //             Map<String, List<Order>> groupedOrders = {};
+    //             orders.forEach((order) {
+    //               if (!groupedOrders.containsKey(order.ordno)) {
+    //                 groupedOrders[order.ordno] = [];
+    //               }
+    //               groupedOrders[order.ordno]!.add(order);
+    //             });
+
+    //             // Calculate total payment value for each order ID
+    //             Map<String, double> totalPaymentValue = {};
+    //             groupedOrders.forEach((orderId, orderList) {
+    //               double sum = 0;
+    //               orderList.forEach((order) {
+    //                 sum += order.cash > 0 ? order.cash : order.eftpos;
+    //               });
+    //               totalPaymentValue[orderId] = sum;
+    //             });
+
+    //             return Card(
+    //               color: Colors.blue.shade100,
+    //               child: ExpansionTile(
+    //                 title: Row(
+    //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //                   children: [
+    //                     Text(paymentMethod),
+    //                     Text(
+    //                         '\$${totalPaymentValue[order.ordno]?.toStringAsFixed(2) ?? '0.00'}'),
+    //                   ],
+    //                 ),
+    //                 subtitle: Text('Time: ${order.odate} ${order.otime}'),
+    //                 children: groupedOrders[order.ordno]!.map((order) {
+    //                   return ListTile(
+    //                     title: Text('Item Name: ${order.itemnm}'),
+    //                     trailing:
+    //                         Text('\$${order.itmprice.toStringAsFixed(2)}'),
+    //                   );
+    //                 }).toList(),
+    //               ),
+    //             );
+    //           },
+    //         );
+    //       } else if (snapshot.hasError) {
+    //         return Text('Error: ${snapshot.error}');
+    //       } else {
+    //         return Center(child: CircularProgressIndicator());
+    //       }
+    //     },
+    //   ),
+    // );
+
+    // Sort orders by payment method
+    orders.sort((a, b) {
+      if (a.cash > 0 && b.cash == 0) {
+        return -1; // a is cash, b is eftpos
+      } else if (a.cash == 0 && b.cash > 0) {
+        return 1; // a is eftpos, b is cash
+      } else {
+        return 0; // same payment method, maintain order
+      }
+    });
     return ListView.builder(
-      itemCount: controller.orderSet.length,
+      itemCount: orders.length,
       shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
+      physics: NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
-        int res = 0;
-        List amcl = [];
-        List status = [];
-        List item = [];
-        double sum = 0.0;
-        double cashSum = 0.0;
-        double eftSum = 0.0;
+        Order order = orders[index];
+        String paymentMethod = order.cash > 0 ? 'Cash' : 'Eftpos';
 
-        res = controller.orderList
-            .map((element) =>
-                element == controller.orderSet.toList()[index] ? 1 : 0)
-            .reduce((value, element) => value + element);
+        // Group orders by order ID
+        Map<String, List<Order>> groupedOrders = {};
+        orders.forEach((order) {
+          if (!groupedOrders.containsKey(order.ordno)) {
+            groupedOrders[order.ordno] = [];
+          }
+          groupedOrders[order.ordno]!.add(order);
+        });
 
-        amcl = controller
-            .orderCalMap[controller.orderSet.toList()[index].toString()]
-            .toString()
-            .split(",");
-        sum = amcl.fold<double>(
-            0, (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
-        status = controller
-            .statusMap[controller.orderSet.toList()[index].toString()]
-            .toString()
-            .split(",");
-        item = controller
-            .itemsMap[controller.orderSet.toList()[index].toString()]
-            .toString()
-            .split(",");
-        List time = controller
-            .itemsTime[controller.orderSet.toList()[index].toString()]
-            .toString()
-            .split(",");
-        Set statusName = {};
-        List cashAm = [];
-        List eftAm = [];
-        List.generate(
-            status.length,
-            (indd) => status[indd] == "3"
-                ? statusName.add("Eftpos")
-                : statusName.add("Cash"));
-        List.generate(
-            status.length,
-            (indd) => status[indd] == "3"
-                ? eftAm.add(amcl[indd])
-                : cashAm.add(amcl[indd]));
-        cashSum = cashAm.fold<double>(
-            0, (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
-        eftSum = eftAm.fold<double>(
-            0, (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
+        // Calculate total payment value for each order ID
+        Map<String, double> totalPaymentValue = {};
+        groupedOrders.forEach((orderId, orderList) {
+          double sum = 0;
+          orderList.forEach((order) {
+            sum += order.cash > 0 ? order.cash : order.eftpos;
+          });
+          totalPaymentValue[orderId] = sum;
+        });
+
         return Card(
           color: Colors.blue.shade100,
           child: ExpansionTile(
-            title: ListTile(
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                title: Text(
-                  statusName.toString().replaceAll("}", "").replaceAll("{", ""),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                subtitle: Text(time[0].toString()),
-                // trailing: Text(sum.toPrecision(2).toString()),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (eftSum != 0 && cashSum != 0)
-                      Text(
-                          "${cashSum.toPrecision(2)},${eftSum.toPrecision(2)}"),
-                    if (eftSum == 0) Text(cashSum.toPrecision(2).toString()),
-                    if (cashSum == 0)
-                      Text(eftSum == 0 ? "" : eftSum.toPrecision(2).toString())
-                  ],
-                )),
-            children: [
-              ListView.builder(
-                itemCount: item.length,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, itemIndex) {
-                  try {
-                    return ListTile(
-                      title: Text(item[itemIndex].toString()),
-                      trailing: Text(amcl[itemIndex].toString()),
-                      dense: true,
-                    );
-                  } catch (e) {
-                    return ListTile(
-                      title: Text(item[itemIndex].toString()),
-                      trailing: Text("".toString()),
-                      dense: true,
-                    );
-                  }
-                },
-              )
-            ],
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(paymentMethod),
+                Text(
+                    '\$${totalPaymentValue[order.ordno]?.toStringAsFixed(2) ?? '0.00'}'),
+              ],
+            ),
+            subtitle: Text(
+              'Time: ${order.odate} ${order.otime}',
+              style: TextStyle(fontSize: 12),
+            ),
+            children: groupedOrders[order.ordno]!.map((order) {
+              return ListTile(
+                title: Text('Item Name: ${order.itemnm}'),
+                trailing: Text('\$${order.itmprice.toStringAsFixed(2)}'),
+              );
+            }).toList(),
           ),
         );
       },
     );
+
+    // ListView.builder(
+    //   itemCount: controller.orderSet.length,
+    //   shrinkWrap: true,
+    //   physics: const NeverScrollableScrollPhysics(),
+    //   itemBuilder: (context, index) {
+    //     int res = 0;
+    //     List amcl = [];
+    //     List status = [];
+    //     List item = [];
+    //     double sum = 0.0;
+    //     double cashSum = 0.0;
+    //     double eftSum = 0.0;
+
+    //     res = controller.orderList
+    //         .map((element) =>
+    //             element == controller.orderSet.toList()[index] ? 1 : 0)
+    //         .reduce((value, element) => value + element);
+
+    //     amcl = controller
+    //         .orderCalMap[controller.orderSet.toList()[index].toString()]
+    //         .toString()
+    //         .split(",");
+    //     sum = amcl.fold<double>(
+    //         0, (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
+    //     status = controller
+    //         .statusMap[controller.orderSet.toList()[index].toString()]
+    //         .toString()
+    //         .split(",");
+    //     item = controller
+    //         .itemsMap[controller.orderSet.toList()[index].toString()]
+    //         .toString()
+    //         .split(",");
+    //     List time = controller
+    //         .itemsTime[controller.orderSet.toList()[index].toString()]
+    //         .toString()
+    //         .split(",");
+    //     Set statusName = {};
+    //     List cashAm = [];
+    //     List eftAm = [];
+    //     List.generate(
+    //         status.length,
+    //         (indd) => status[indd] == "3"
+    //             ? statusName.add("Eftpos")
+    //             : statusName.add("Cash"));
+    //     List.generate(
+    //         status.length,
+    //         (indd) => status[indd] == "3"
+    //             ? eftAm.add(amcl[indd])
+    //             : cashAm.add(amcl[indd]));
+    //     cashSum = cashAm.fold<double>(
+    //         0, (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
+    //     eftSum = eftAm.fold<double>(
+    //         0, (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
+    //     return Card(
+    //       color: Colors.blue.shade100,
+    //       child: ExpansionTile(
+    //         title: ListTile(
+    //             dense: true,
+    //             contentPadding: EdgeInsets.zero,
+    //             title: Text(
+    //               statusName.toString().replaceAll("}", "").replaceAll("{", ""),
+    //               maxLines: 1,
+    //               overflow: TextOverflow.ellipsis,
+    //             ),
+    //             subtitle: Text(time[0].toString()),
+    //             // trailing: Text(sum.toPrecision(2).toString()),
+    //             trailing: Row(
+    //               mainAxisSize: MainAxisSize.min,
+    //               children: [
+    //                 if (eftSum != 0 && cashSum != 0)
+    //                   Text(
+    //                       "${cashSum.toPrecision(2)},${eftSum.toPrecision(2)}"),
+    //                 if (eftSum == 0) Text(cashSum.toPrecision(2).toString()),
+    //                 if (cashSum == 0)
+    //                   Text(eftSum == 0 ? "" : eftSum.toPrecision(2).toString())
+    //               ],
+    //             )),
+    //         children: [
+    //           ListView.builder(
+    //             itemCount: item.length,
+    //             shrinkWrap: true,
+    //             physics: const NeverScrollableScrollPhysics(),
+    //             itemBuilder: (context, itemIndex) {
+    //               try {
+    //                 return ListTile(
+    //                   title: Text(item[itemIndex].toString()),
+    //                   trailing: Text(amcl[itemIndex].toString()),
+    //                   dense: true,
+    //                 );
+    //               } catch (e) {
+    //                 return ListTile(
+    //                   title: Text(item[itemIndex].toString()),
+    //                   trailing: Text("".toString()),
+    //                   dense: true,
+    //                 );
+    //               }
+    //             },
+    //           )
+    //         ],
+    //       ),
+    //     );
+    //   },
+    // );
   }
 
   // ListView cashDataList() {
@@ -823,5 +983,100 @@ class _ReportingScreenState extends State<ReportingScreen> {
               ],
             ),
         context: context);
+  }
+}
+
+class Order {
+  final String posid;
+  final String odate;
+  final String otime;
+  final String ordno;
+  final String createby;
+  final double totamt;
+  final double ordgst;
+  final double salesex;
+  final double discamt;
+  final double paidamt;
+  final String compnm;
+  final String puser;
+  final String shopnm;
+  final double cash;
+  final double eftpos;
+  final int onaccount;
+  final String category;
+  final String itemid;
+  final String itemnm;
+  final String base;
+  final String size;
+  final int qty;
+  final double itmprice;
+  final double costprice;
+  final int lineno;
+  final String categ;
+  final int status;
+  final String daid;
+
+  Order({
+    required this.posid,
+    required this.odate,
+    required this.otime,
+    required this.ordno,
+    required this.createby,
+    required this.totamt,
+    required this.ordgst,
+    required this.salesex,
+    required this.discamt,
+    required this.paidamt,
+    required this.compnm,
+    required this.puser,
+    required this.shopnm,
+    required this.cash,
+    required this.eftpos,
+    required this.onaccount,
+    required this.category,
+    required this.itemid,
+    required this.itemnm,
+    required this.base,
+    required this.size,
+    required this.qty,
+    required this.itmprice,
+    required this.costprice,
+    required this.lineno,
+    required this.categ,
+    required this.status,
+    required this.daid,
+  });
+
+  factory Order.fromJson(Map<String, dynamic> json) {
+    return Order(
+      posid: json['posid'],
+      odate: json['odate'],
+      otime: json['otime'],
+      ordno: json['ordno'],
+      createby: json['createby'],
+      totamt: double.parse(json['totamt']),
+      ordgst: double.parse(json['ordgst']),
+      salesex: double.parse(json['salesex']),
+      discamt: double.parse(json['discamt']),
+      paidamt: double.parse(json['paidamt']),
+      compnm: json['compnm'],
+      puser: json['puser'],
+      shopnm: json['shopnm'],
+      cash: double.parse(json['cash']),
+      eftpos: double.parse(json['eftpos']),
+      onaccount: int.parse(json['onaccount']),
+      category: json['category'],
+      itemid: json['itemid'],
+      itemnm: json['itemnm'],
+      base: json['base'],
+      size: json['size'],
+      qty: int.parse(json['qty']),
+      itmprice: double.parse(json['itmprice']),
+      costprice: double.parse(json['costprice']),
+      lineno: int.parse(json['lineno']),
+      categ: json['categ'],
+      status: int.parse(json['status']),
+      daid: json['daid'],
+    );
   }
 }

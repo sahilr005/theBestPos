@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:order/utils/repository/network_repository.dart';
+import 'package:order/view/reporting/reporting.dart';
 
 class ReportingController extends GetxController {
   DateTime fromDate = DateTime.now();
   int sortValue = 0;
   int paymentMode = 0;
   List reportingData = [];
+  RxList<Order> reportingDataModel = <Order>[].obs;
   List shopData = [];
   String shopName = "";
   Set shopNameSet = {};
@@ -29,18 +31,13 @@ class ReportingController extends GetxController {
   List orderItem = [];
   List orderTime = [];
 
-  // Set cashSet = {};
-  // List cashList1 = [];
-  // List cashAmount = [];
-  // List cashStatus = [];
-  // List cashItem = [];
-
   Map orderCalMap = {};
   Map statusMap = {};
   Map itemsMap = {};
   Map itemsTime = {};
   List cashCount = [];
   double cashPayment = 0;
+  double eftPayment = 0;
 
   List eftpoList = [];
   Set eftpoSet = {};
@@ -68,7 +65,7 @@ class ReportingController extends GetxController {
       log("Shop Name $shopName");
       log("Shop Name ${shopNameSet.length}");
 
-      reportingAPI(context);
+      await reportingAPI(context);
 
       update();
     }
@@ -82,6 +79,7 @@ class ReportingController extends GetxController {
         "${DateFormat.d().format(fromDate)}-${DateFormat.M().format(fromDate)}-${DateFormat.y().format(fromDate)}";
 
     reportingData = [];
+    reportingDataModel.clear();
     categorySet = {};
     categoryList = [];
     categoryAmount = [];
@@ -103,22 +101,28 @@ class ReportingController extends GetxController {
     itemsTime = {};
     cashCount = [];
     cashPayment = 0;
+    eftPayment = 0;
 
-    // cashSet = {};
-    // cashList1 = [];
-    // cashAmount = [];
-    // cashStatus = [];
-    // cashItem = [];
+    List totAm = [];
+    List eftpos = [];
+    List cash = [];
     itemMapCal = {};
     amcl = [];
     totalAmount = 0.0;
     var res =
         await networkRepository.reportingShopCAll(context, fdt, tdt, shopName);
-
+    var set = <Map>{};
     if (res != null) {
       reportingData = res;
+
       if (reportingData.isNotEmpty) {
+        reportingDataModel.value =
+            reportingData.map((json) => Order.fromJson(json)).toList();
         for (var i = 0; i < reportingData.length; i++) {
+          if (set.any((e) => e['ordno'] == reportingData[i]["ordno"])) {
+            continue;
+          }
+          set.add(reportingData[i]);
           categoryAmount.add(reportingData[i]["totamt"]);
           categoryList.add(reportingData[i]["categ"]);
           categorySet.add(reportingData[i]["categ"]);
@@ -133,16 +137,28 @@ class ReportingController extends GetxController {
           orderItem.add(reportingData[i]["itemnm"]);
           orderTime.add(reportingData[i]["otime"]);
           orderSet.add(reportingData[i]["ordno"]);
-          // if (reportingData[i]["status"].toString() == "9") {
-          //   cashList1.add(reportingData[i]);
-          // } else {
-          //   eftpoList.add(reportingData[i]);
-          // }
+
+          totAm.add(reportingData[i]["totamt"]);
+          eftpos.add(reportingData[i]["eftpos"]);
+          cash.add(reportingData[i]["cash"]);
         }
-        // cashCal();
         calMap = cal();
         itemMapCal = itemCal();
         orderCal();
+        cashPayment = cash.fold(0, (p, c) => p + (num.tryParse(c ?? '0') ?? 0));
+        eftPayment =
+            eftpos.fold(0, (p, c) => p + (num.tryParse(c ?? '0') ?? 0));
+        totalAmount =
+            totAm.fold(0, (p, c) => p + (num.tryParse(c ?? '0') ?? 0));
+        num totamt0 =
+            totAm.fold(0, (p, c) => p + (num.tryParse(c ?? '0') ?? 0));
+        num casho = cash.fold(0, (p, c) => p + (num.tryParse(c ?? '0') ?? 0));
+        log(cash.toString());
+        for (var i = 0; i < cash.length; i++) {
+          if (!cash[i].contains("0.00")) {
+            cashCount.add(1);
+          }
+        }
         update();
       }
       update();
@@ -170,8 +186,8 @@ class ReportingController extends GetxController {
         calMap.addAll({categoryList[i]: categoryAmount[i]});
       }
     }
-    totalAmount = amcl.fold<double>(
-        0, (prev, value) => prev + (double.parse(value.toString())));
+    // totalAmount = amcl.fold<double>(
+    //     0, (prev, value) => prev + (double.parse(value.toString())));
 
     return calMap;
   }
@@ -195,29 +211,11 @@ class ReportingController extends GetxController {
         itemMapCal.addAll({itemList[i]: itemAmount[i]});
       }
     }
-    totalAmount = amcl.fold<double>(
-        0, (prev, value) => prev + (double.parse(value.toString())));
+    // totalAmount = amcl.fold<double>(
+    //     0, (prev, value) => prev + (double.parse(value.toString())));
 
     return itemMapCal;
   }
-
-  // Map cashCal() {
-  //   for (var i = 0; i < cashList1.length; i++) {
-  //     cashSet.add(cashList1[i]["ordno"]);
-  //     cashAmount.add(cashList1[i]["totamt"]);
-  //     // cashList.add(cashList1[i]["ordno"]);
-  //     cashStatus.add(cashList1[i]["status"]);
-  //     cashItem.add(cashList1[i]["itemnm"]);
-  //   }
-  //   log(cashSet.length.toString());
-  //   log("Cash Item ${cashItem.length}");
-
-  //   for (var i = 0; i < eftpoList.length; i++) {
-  //     eftpoSet.add(eftpoList[i]["ordno"]);
-  //   }
-  //   Map map = {};
-  //   return map;
-  // }
 
   List orderCal() {
     orderCalMap = {};
@@ -225,7 +223,6 @@ class ReportingController extends GetxController {
     itemsMap = {};
     itemsTime = {};
     cashCount = [];
-    cashPayment = 0;
     for (var i = 0; i < orderList.length; i++) {
       amcl.add(double.parse(orderAmount
           .toString()
@@ -265,16 +262,8 @@ class ReportingController extends GetxController {
         itemsTime.addAll({orderList[i]: orderTime[i]});
       }
     }
-    totalAmount = amcl.fold<double>(
-        0, (prev, value) => prev + (double.parse(value.toString())));
-    cashCount = [];
-    cashPayment = 0;
-    for (var i = 0; i < orderStatus.length; i++) {
-      if (orderStatus[i].toString() == "9") {
-        cashCount.add(i);
-        cashPayment = cashPayment + double.parse(orderAmount[i]);
-      }
-    }
+    // totalAmount = amcl.fold<double>(
+    //     0, (prev, value) => prev + (double.parse(value.toString())));
 
     Map cashItemMap = {};
     Map cashCalMap = {};

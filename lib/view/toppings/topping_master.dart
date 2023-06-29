@@ -18,7 +18,7 @@ class _ToppingMasterScreenState extends State<ToppingMasterScreen> {
       toppingData = res["toppings"];
       setState(() {});
     } else {
-      CommonMethod().getXSnackBar('Error', res["status"], Colors.red);
+      CommonMethod().getXSnackBar('No Data', res["status"]??"", Colors.red);
     }
   }
 

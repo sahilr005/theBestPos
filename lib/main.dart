@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:order/config/common.dart';
 import 'package:order/utils/api_constants.dart';
@@ -14,6 +15,7 @@ void main() async {
   box = await Hive.openBox('Box');
   NetworkDioHttp.setDynamicHeader(endPoint: ApiAppConstants.apiEndPoint);
   runApp(const MyApp());
+  
 }
 
 class MyApp extends StatelessWidget {
@@ -25,6 +27,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Flutter',
       debugShowCheckedModeBanner: false,
+       builder: EasyLoading.init(),
       theme: ThemeData(
           useMaterial3: true,
           primarySwatch: Colors.pink,
