@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -58,6 +60,27 @@ class _ReportingScreenState extends State<ReportingScreen> {
                             context: context,
                             initialDate: controller.fromDate,
                             firstDate: DateTime(2000),
+                            lastDate: DateTime.now(),
+                          ))!;
+                          // ignore: use_build_context_synchronously
+                          controller
+                              .reportingAPI(context)
+                              .then((value) => setState(() {}));
+                          controller.update();
+                        },
+                      ),
+                    ),
+                    Card(
+                      child: ListTile(
+                        title: Text(
+                          "To : ${DateFormat.yMMMMEEEEd().format(controller.toDate)}",
+                        ),
+                        trailing: const Icon(Icons.calendar_today),
+                        onTap: () async {
+                          controller.toDate = (await showDatePicker(
+                            context: context,
+                            initialDate: controller.toDate,
+                            firstDate: controller.fromDate,
                             lastDate: DateTime.now(),
                           ))!;
                           // ignore: use_build_context_synchronously
@@ -303,122 +326,29 @@ class _ReportingScreenState extends State<ReportingScreen> {
     );
   }
 
-  allPaymentList(orders) {
-    // return Obx(
-    //   () => FutureBuilder<List<Order>>(
-    //     // future: _futureOrders,
-    //     initialData: controller.reportingDataModel.value,
-    //     builder: (context, snapshot) {
-    //       if (snapshot.hasData) {
-    //         List<Order> orders = snapshot.data!;
-
-    //         // Sort orders by payment method
-    //         orders.sort((a, b) {
-    //           if (a.cash > 0 && b.cash == 0) {
-    //             return -1; // a is cash, b is eftpos
-    //           } else if (a.cash == 0 && b.cash > 0) {
-    //             return 1; // a is eftpos, b is cash
-    //           } else {
-    //             return 0; // same payment method, maintain order
-    //           }
-    //         });
-
-    //         return ListView.builder(
-    //           itemCount: orders.length,
-    //           shrinkWrap: true,
-    //           physics: NeverScrollableScrollPhysics(),
-    //           itemBuilder: (context, index) {
-    //             Order order = orders[index];
-    //             String paymentMethod = order.cash > 0 ? 'Cash' : 'Eftpos';
-
-    //             // Group orders by order ID
-    //             Map<String, List<Order>> groupedOrders = {};
-    //             orders.forEach((order) {
-    //               if (!groupedOrders.containsKey(order.ordno)) {
-    //                 groupedOrders[order.ordno] = [];
-    //               }
-    //               groupedOrders[order.ordno]!.add(order);
-    //             });
-
-    //             // Calculate total payment value for each order ID
-    //             Map<String, double> totalPaymentValue = {};
-    //             groupedOrders.forEach((orderId, orderList) {
-    //               double sum = 0;
-    //               orderList.forEach((order) {
-    //                 sum += order.cash > 0 ? order.cash : order.eftpos;
-    //               });
-    //               totalPaymentValue[orderId] = sum;
-    //             });
-
-    //             return Card(
-    //               color: Colors.blue.shade100,
-    //               child: ExpansionTile(
-    //                 title: Row(
-    //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //                   children: [
-    //                     Text(paymentMethod),
-    //                     Text(
-    //                         '\$${totalPaymentValue[order.ordno]?.toStringAsFixed(2) ?? '0.00'}'),
-    //                   ],
-    //                 ),
-    //                 subtitle: Text('Time: ${order.odate} ${order.otime}'),
-    //                 children: groupedOrders[order.ordno]!.map((order) {
-    //                   return ListTile(
-    //                     title: Text('Item Name: ${order.itemnm}'),
-    //                     trailing:
-    //                         Text('\$${order.itmprice.toStringAsFixed(2)}'),
-    //                   );
-    //                 }).toList(),
-    //               ),
-    //             );
-    //           },
-    //         );
-    //       } else if (snapshot.hasError) {
-    //         return Text('Error: ${snapshot.error}');
-    //       } else {
-    //         return Center(child: CircularProgressIndicator());
-    //       }
-    //     },
-    //   ),
-    // );
-
-    // Sort orders by payment method
-    orders.sort((a, b) {
-      if (a.cash > 0 && b.cash == 0) {
-        return -1; // a is cash, b is eftpos
-      } else if (a.cash == 0 && b.cash > 0) {
-        return 1; // a is eftpos, b is cash
-      } else {
-        return 0; // same payment method, maintain order
+  Widget allPaymentList(List<Order> orders) {
+    // Group orders by otime
+    Map<String, List<Order>> groupedOrdersByTime = {};
+    orders.forEach((order) {
+      if (!groupedOrdersByTime.containsKey(order.otime)) {
+        groupedOrdersByTime[order.otime] = [];
       }
+      groupedOrdersByTime[order.otime]!.add(order);
     });
+    Set<String> uniqueOrdnoSet = {};
     return ListView.builder(
       itemCount: orders.length,
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
         Order order = orders[index];
-        String paymentMethod = order.cash > 0 ? 'Cash' : 'Eftpos';
-
-        // Group orders by order ID
-        Map<String, List<Order>> groupedOrders = {};
-        orders.forEach((order) {
-          if (!groupedOrders.containsKey(order.ordno)) {
-            groupedOrders[order.ordno] = [];
-          }
-          groupedOrders[order.ordno]!.add(order);
-        });
-
-        // Calculate total payment value for each order ID
-        Map<String, double> totalPaymentValue = {};
-        groupedOrders.forEach((orderId, orderList) {
-          double sum = 0;
-          orderList.forEach((order) {
-            sum += order.cash > 0 ? order.cash : order.eftpos;
-          });
-          totalPaymentValue[orderId] = sum;
-        });
-
+        String paymentMethod = order.cash > 0.00 ? 'Cash' : 'Eftpos';
+        // Check if ordno has already been added
+        if (uniqueOrdnoSet.contains(order.ordno)) {
+          return SizedBox.shrink();
+        } else {
+          uniqueOrdnoSet.add(order.ordno);
+        }
         return Card(
           color: Colors.blue.shade100,
           child: ExpansionTile(
@@ -426,272 +356,21 @@ class _ReportingScreenState extends State<ReportingScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(paymentMethod),
-                Text(
-                    '\$${totalPaymentValue[order.ordno]?.toStringAsFixed(2) ?? '0.00'}'),
+                Text('\$${order.totamt}'),
               ],
             ),
-            subtitle: Text(
-              'Time: ${order.odate} ${order.otime}',
-              style: TextStyle(fontSize: 12),
-            ),
-            children: groupedOrders[order.ordno]!.map((order) {
+            subtitle: Text('${order.otime}'),
+            children: groupedOrdersByTime[order.otime]!.map((order) {
               return ListTile(
                 title: Text('Item Name: ${order.itemnm}'),
-                trailing: Text('\$${order.itmprice.toStringAsFixed(2)}'),
+                subtitle: Text('Value: \$${order.itmprice.toStringAsFixed(2)}'),
               );
             }).toList(),
           ),
         );
       },
     );
-
-    // ListView.builder(
-    //   itemCount: controller.orderSet.length,
-    //   shrinkWrap: true,
-    //   physics: const NeverScrollableScrollPhysics(),
-    //   itemBuilder: (context, index) {
-    //     int res = 0;
-    //     List amcl = [];
-    //     List status = [];
-    //     List item = [];
-    //     double sum = 0.0;
-    //     double cashSum = 0.0;
-    //     double eftSum = 0.0;
-
-    //     res = controller.orderList
-    //         .map((element) =>
-    //             element == controller.orderSet.toList()[index] ? 1 : 0)
-    //         .reduce((value, element) => value + element);
-
-    //     amcl = controller
-    //         .orderCalMap[controller.orderSet.toList()[index].toString()]
-    //         .toString()
-    //         .split(",");
-    //     sum = amcl.fold<double>(
-    //         0, (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
-    //     status = controller
-    //         .statusMap[controller.orderSet.toList()[index].toString()]
-    //         .toString()
-    //         .split(",");
-    //     item = controller
-    //         .itemsMap[controller.orderSet.toList()[index].toString()]
-    //         .toString()
-    //         .split(",");
-    //     List time = controller
-    //         .itemsTime[controller.orderSet.toList()[index].toString()]
-    //         .toString()
-    //         .split(",");
-    //     Set statusName = {};
-    //     List cashAm = [];
-    //     List eftAm = [];
-    //     List.generate(
-    //         status.length,
-    //         (indd) => status[indd] == "3"
-    //             ? statusName.add("Eftpos")
-    //             : statusName.add("Cash"));
-    //     List.generate(
-    //         status.length,
-    //         (indd) => status[indd] == "3"
-    //             ? eftAm.add(amcl[indd])
-    //             : cashAm.add(amcl[indd]));
-    //     cashSum = cashAm.fold<double>(
-    //         0, (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
-    //     eftSum = eftAm.fold<double>(
-    //         0, (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
-    //     return Card(
-    //       color: Colors.blue.shade100,
-    //       child: ExpansionTile(
-    //         title: ListTile(
-    //             dense: true,
-    //             contentPadding: EdgeInsets.zero,
-    //             title: Text(
-    //               statusName.toString().replaceAll("}", "").replaceAll("{", ""),
-    //               maxLines: 1,
-    //               overflow: TextOverflow.ellipsis,
-    //             ),
-    //             subtitle: Text(time[0].toString()),
-    //             // trailing: Text(sum.toPrecision(2).toString()),
-    //             trailing: Row(
-    //               mainAxisSize: MainAxisSize.min,
-    //               children: [
-    //                 if (eftSum != 0 && cashSum != 0)
-    //                   Text(
-    //                       "${cashSum.toPrecision(2)},${eftSum.toPrecision(2)}"),
-    //                 if (eftSum == 0) Text(cashSum.toPrecision(2).toString()),
-    //                 if (cashSum == 0)
-    //                   Text(eftSum == 0 ? "" : eftSum.toPrecision(2).toString())
-    //               ],
-    //             )),
-    //         children: [
-    //           ListView.builder(
-    //             itemCount: item.length,
-    //             shrinkWrap: true,
-    //             physics: const NeverScrollableScrollPhysics(),
-    //             itemBuilder: (context, itemIndex) {
-    //               try {
-    //                 return ListTile(
-    //                   title: Text(item[itemIndex].toString()),
-    //                   trailing: Text(amcl[itemIndex].toString()),
-    //                   dense: true,
-    //                 );
-    //               } catch (e) {
-    //                 return ListTile(
-    //                   title: Text(item[itemIndex].toString()),
-    //                   trailing: Text("".toString()),
-    //                   dense: true,
-    //                 );
-    //               }
-    //             },
-    //           )
-    //         ],
-    //       ),
-    //     );
-    //   },
-    // );
   }
-
-  // ListView cashDataList() {
-  //   return ListView.builder(
-  //     itemCount: controller.cashSet.length,
-  //     shrinkWrap: true,
-  //     physics: const NeverScrollableScrollPhysics(),
-  //     itemBuilder: (context, index) {
-  //       int res = 0;
-  //       List amcl = [];
-
-  //       List item = [];
-  //       double sum = 0.0;
-
-  //       res = controller.orderList
-  //           .map((element) =>
-  //               element == controller.cashSet.toList()[index] ? 1 : 0)
-  //           .reduce((value, element) => value + element);
-
-  //       amcl = controller
-  //           .orderCal()[6][controller.cashSet.toList()[index].toString()]
-  //           .toString()
-  //           .split(",");
-  //       sum = amcl.fold<double>(
-  //           0, (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
-
-  //       item = controller
-  //           .orderCal()[5][controller.cashSet.toList()[index].toString()]
-  //           .toString()
-  //           .split(",");
-
-  //       return Card(
-  //         color: Colors.blue.shade100,
-  //         child: ExpansionTile(
-  //           title: ListTile(
-  //             dense: true,
-  //             contentPadding: EdgeInsets.zero,
-  //             title: const Text(
-  //               "Cash",
-  //               maxLines: 1,
-  //               overflow: TextOverflow.ellipsis,
-  //             ),
-  //             subtitle: Text(controller.cashSet.toList()[index].toString()),
-  //             trailing: Text(sum.toPrecision(2).toString()),
-  //           ),
-  //           children: [
-  //             ListView.builder(
-  //               itemCount: item.length,
-  //               shrinkWrap: true,
-  //               physics: const NeverScrollableScrollPhysics(),
-  //               itemBuilder: (context, itemIndex) {
-  //                 try {
-  //                   return ListTile(
-  //                     title: Text(item[itemIndex].toString()),
-  //                     trailing: Text(amcl[itemIndex].toString()),
-  //                     dense: true,
-  //                   );
-  //                 } catch (e) {
-  //                   return ListTile(
-  //                     title: Text(item[itemIndex].toString()),
-  //                     trailing: Text("".toString()),
-  //                     dense: true,
-  //                   );
-  //                 }
-  //               },
-  //             )
-  //           ],
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-
-  // ListView eftposDataList() {
-  //   return ListView.builder(
-  //     itemCount: controller.eftpoSet.length,
-  //     shrinkWrap: true,
-  //     physics: const NeverScrollableScrollPhysics(),
-  //     itemBuilder: (context, index) {
-  //       int res = 0;
-  //       List amcl = [];
-  //       List item = [];
-  //       double sum = 0.0;
-  //       res = controller.orderList
-  //           .map((element) =>
-  //               element == controller.eftpoSet.toList()[index] ? 1 : 0)
-  //           .reduce((value, element) => value + element);
-
-  //       amcl = controller
-  //           .orderCal()[0][controller.eftpoSet.toList()[index].toString()]
-  //           .toString()
-  //           .split(",");
-  //       sum = amcl.fold<double>(
-  //           0, (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
-
-  //       item = controller
-  //           .orderCal()[2][controller.eftpoSet.toList()[index].toString()]
-  //           .toString()
-  //           .split(",");
-
-  //       return sum == 0
-  //           ? const SizedBox()
-  //           : Card(
-  //               color: Colors.blue.shade100,
-  //               child: ExpansionTile(
-  //                 title: ListTile(
-  //                   dense: true,
-  //                   contentPadding: EdgeInsets.zero,
-  //                   title: const Text(
-  //                     "Eftpos",
-  //                     maxLines: 1,
-  //                     overflow: TextOverflow.ellipsis,
-  //                   ),
-  //                   subtitle:
-  //                       Text(controller.eftpoSet.toList()[index].toString()),
-  //                   trailing: Text(sum.toPrecision(2).toString()),
-  //                 ),
-  //                 children: [
-  //                   ListView.builder(
-  //                     itemCount: item.length,
-  //                     shrinkWrap: true,
-  //                     physics: const NeverScrollableScrollPhysics(),
-  //                     itemBuilder: (context, itemIndex) {
-  //                       try {
-  //                         return ListTile(
-  //                           title: Text(item[itemIndex].toString()),
-  //                           trailing: Text(amcl[itemIndex].toString()),
-  //                           dense: true,
-  //                         );
-  //                       } catch (e) {
-  //                         return ListTile(
-  //                           title: Text(item[itemIndex].toString()),
-  //                           trailing: Text("".toString()),
-  //                           dense: true,
-  //                         );
-  //                       }
-  //                     },
-  //                   )
-  //                 ],
-  //               ),
-  //             );
-  //     },
-  //   );
-  // }
 
   ListTile shopSelect(BuildContext context) {
     return ListTile(

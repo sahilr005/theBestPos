@@ -8,6 +8,7 @@ import 'package:order/view/reporting/reporting.dart';
 
 class ReportingController extends GetxController {
   DateTime fromDate = DateTime.now();
+  DateTime toDate = DateTime.now();
   int sortValue = 0;
   int paymentMode = 0;
   List reportingData = [];
@@ -73,8 +74,9 @@ class ReportingController extends GetxController {
   }
 
   Future<bool> reportingAPI(BuildContext context, {shop}) async {
+    DateTime td = toDate;
     var tdt =
-        "${DateFormat.d().format(DateTime.now())}-${DateFormat.M().format(DateTime.now())}-${DateFormat.y().format(DateTime.now())}";
+        "${DateFormat.d().format(td)}-${DateFormat.M().format(td)}-${DateFormat.y().format(td)}";
     var fdt =
         "${DateFormat.d().format(fromDate)}-${DateFormat.M().format(fromDate)}-${DateFormat.y().format(fromDate)}";
 
@@ -116,12 +118,12 @@ class ReportingController extends GetxController {
       reportingData = res;
 
       if (reportingData.isNotEmpty) {
-        reportingDataModel.value =
-            reportingData.map((json) => Order.fromJson(json)).toList();
         for (var i = 0; i < reportingData.length; i++) {
           if (set.any((e) => e['ordno'] == reportingData[i]["ordno"])) {
             continue;
           }
+          reportingDataModel.value =
+              reportingData.map((json) => Order.fromJson(json)).toList();
           set.add(reportingData[i]);
           categoryAmount.add(reportingData[i]["totamt"]);
           categoryList.add(reportingData[i]["categ"]);
