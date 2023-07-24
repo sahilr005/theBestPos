@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -336,19 +334,51 @@ class _ReportingScreenState extends State<ReportingScreen> {
       groupedOrdersByTime[order.otime]!.add(order);
     });
     Set<String> uniqueOrdnoSet = {};
+    num co = 0;
+    num webAmount = 0;
     return ListView.builder(
-      itemCount: orders.length,
+      itemCount: orders.length + 1,
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
+        if (index == orders.length) {
+          return Card(
+            color: Colors.green.shade50,
+            child: ListTile(
+              title: Text("Total Uber Eats(Eftpos)"),
+              subtitle: Text("Total Amount "),
+              trailing: Text(
+                "$co"
+                        "\n\$" +
+                    webAmount.toStringAsFixed(2),
+              ),
+            ),
+          );
+        }
         Order order = orders[index];
-        String paymentMethod = order.cash > 0.00 ? 'Cash' : 'Eftpos';
+        String paymentMethod;
+
+        // Check the payment method based on the createby field
+        if (order.createby == "Web") {
+          // If payment is from Web and the method is Eftpos, show 'ubereat(eftpos)'
+          paymentMethod =
+              order.eftpos > 0.00 ? 'Uber Eats(Eftpos)' : 'Uber Eats(cash)';
+        } else {
+          // For other payments, use the existing logic
+          paymentMethod = order.cash > 0.00 ? 'Cash' : 'Eftpos';
+        }
+
         // Check if ordno has already been added
         if (uniqueOrdnoSet.contains(order.ordno)) {
           return SizedBox.shrink();
         } else {
           uniqueOrdnoSet.add(order.ordno);
         }
+        if (paymentMethod == 'Uber Eats(Eftpos)') {
+          co++;
+          webAmount = webAmount + order.totamt;
+        }
+
         return Card(
           color: Colors.blue.shade100,
           child: ExpansionTile(
@@ -362,8 +392,8 @@ class _ReportingScreenState extends State<ReportingScreen> {
             subtitle: Text('${order.otime}'),
             children: groupedOrdersByTime[order.otime]!.map((order) {
               return ListTile(
-                title: Text('Item Name: ${order.itemnm}'),
-                subtitle: Text('Value: \$${order.itmprice.toStringAsFixed(2)}'),
+                title: Text('${order.itemnm}'),
+                trailing: Text('\$${order.itmprice.toStringAsFixed(2)}'),
               );
             }).toList(),
           ),
