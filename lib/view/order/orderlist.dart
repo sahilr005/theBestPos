@@ -20,7 +20,7 @@ class OrderListScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: GetBuilder<OrderListController>(
-          init: OrderListController(),
+          init: orderListController,
           initState: (_) {
             orderListController.orderList(context);
           },

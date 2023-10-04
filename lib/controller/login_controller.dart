@@ -22,7 +22,8 @@ class LoginController extends GetxController {
         update();
         Get.offAll(() => const HomeScreen());
       } else {
-        CommonMethod().getXSnackBar('Error', res.status!, Colors.red);
+        print("===== $res");
+        CommonMethod().getXSnackBar('Error', res["status"]!, Colors.red);
       }
     } else {
       Get.snackbar("Fill the details", "Email & Password is required");

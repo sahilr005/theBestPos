@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:order/config/common.dart';
 import 'package:order/view/category/category_master.dart';
+import 'package:order/view/holiday/holiday.dart';
 import 'package:order/view/item/itemmaster.dart';
 import 'package:order/view/login/login.dart';
 import 'package:order/view/order/orderlist.dart';
@@ -30,7 +31,9 @@ class _HomeScreenState extends State<HomeScreen> {
             children: <Widget>[
               DrawerHeader(
                 // decoration: BoxDecoration(color: appColor.withOpacity(0.2)),
-                child: Image.asset("assets/fwdposlogo/the-best-POS_final-logo.png", height: Get.height * .3),
+                child: Image.asset(
+                    "assets/fwdposlogo/the-best-POS_final-logo.png",
+                    height: Get.height * .3),
               ),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
@@ -106,6 +109,14 @@ class SelectOptions extends StatelessWidget {
               Get.to(() => const ItemMasterScreen());
             },
             title: const Text("Item Master"),
+          ),
+        ),
+        Card(
+          child: ListTile(
+            onTap: () {
+              Get.to(() => HolidayMaster());
+            },
+            title: const Text("Holiday Master"),
           ),
         ),
         Card(

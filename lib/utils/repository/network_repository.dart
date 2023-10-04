@@ -1,8 +1,13 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:order/config/common.dart';
+import 'package:order/model/HolidayStausModel.dart';
+import 'package:order/model/holiday_model.dart';
 import 'package:order/utils/api_constants.dart';
 import 'package:order/utils/common_method.dart';
 import 'package:order/utils/network_dio/network_dio.dart';
+import 'package:order/utils/process_indicator.dart';
 
 NetworkRepository networkRepository = NetworkRepository();
 
@@ -18,10 +23,16 @@ class NetworkRepository {
 
   Future userLogin(context, email, password) async {
     try {
+      var uri = Uri.https(
+          "esofttechnologies.com.au",
+          "/restroapp/login-api.php",
+          {"unm": email, "pwd": password.toString()});
+      log(uri.toString());
       final authUserResponse = await NetworkDioHttp.getDioHttpMethod(
         context: context,
-        url:
-            "${ApiAppConstants.apiEndPoint}${ApiAppConstants.login}?unm=$email&pwd=$password",
+        url: uri.toString(),
+        // "https://esofttechnologies.com.au/restroapp/login-api.php?unm=tahmooruser&pwd=Tahmoor$#1234"
+        // "${ApiAppConstants.apiEndPoint}${ApiAppConstants.login}?unm=$email&pwd=$password",
       );
       debugPrint('\x1b[97m Response : $authUserResponse');
       return await authUserResponse['body'];
@@ -54,7 +65,7 @@ class NetworkRepository {
         context: context,
         url:
             "${ApiAppConstants.apiEndPoint}${ApiAppConstants.posOrder}?tkn=$token&fdt=$fromDate&tdt=$toDate&shopnm=$shopName",
-            // "${ApiAppConstants.apiEndPoint}${ApiAppConstants.posOrder}?tkn=$token&fdt=19-03-2022&tdt=19-03-2022&shopnm=$shopName",
+        // "${ApiAppConstants.apiEndPoint}${ApiAppConstants.posOrder}?tkn=$token&fdt=19-03-2022&tdt=19-03-2022&shopnm=$shopName",
       );
       debugPrint('\x1b[97m Response : $authUserResponse');
       return await authUserResponse['body'];
@@ -128,6 +139,157 @@ class NetworkRepository {
     } catch (e) {
       CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
       return e.toString();
+    }
+  }
+
+  Future<HolidayModel> holidayCall(context) async {
+    Circle processIndicator = Circle();
+    final String? token = box!.get('token');
+    String url =
+        // "https://esofttechnologies.com.au/restroapp/holiday-dt-api.php?tkn=$token";
+        "${ApiAppConstants.apiEndPoint}${ApiAppConstants.holiday}?tkn=$token";
+    log("url --  $url");
+    try {
+      final authUserResponse = await NetworkDioHttp.postDioHttpMethod(
+          context: context,
+          url: url,
+          data: {
+            "tkn": "$token",
+          });
+      debugPrint('\x1b[97m Response : $authUserResponse');
+      HolidayModel holidayModel =
+          await HolidayModel.fromJson(authUserResponse['body']);
+      return await holidayModel;
+    } catch (e) {
+      if (context != null) processIndicator.hide(context);
+      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      return await HolidayModel.fromJson({});
+    }
+  }
+
+  Future<HolidayStatusModel> holidayStatusCall(context) async {
+    Circle processIndicator = Circle();
+    final String? token = box!.get('token');
+    String url =
+        // "https://esofttechnologies.com.au/restroapp/holiday-dt-api.php?tkn=$token";
+        "${ApiAppConstants.apiEndPoint}${ApiAppConstants.holidayStatus}?tkn=$token";
+    log("url --  $url");
+    try {
+      final authUserResponse = await NetworkDioHttp.postDioHttpMethod(
+          context: context,
+          url: url,
+          data: {
+            "tkn": "$token",
+          });
+      debugPrint('\x1b[97m Response : $authUserResponse');
+      HolidayStatusModel holidayModel =
+          await HolidayStatusModel.fromJson(authUserResponse['body']);
+      return await holidayModel;
+    } catch (e) {
+      if (context != null) processIndicator.hide(context);
+      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      return await HolidayStatusModel.fromJson({});
+    }
+  }
+
+  Future updateHolidayStatus({context, title, status, description}) async {
+    Circle processIndicator = Circle();
+    final String? token = box!.get('token');
+    String url =
+        "${ApiAppConstants.apiEndPoint}${ApiAppConstants.updateHoliday}?tkn=$token";
+    Map data = {
+      "tkn": "$token",
+      "status": status,
+      "title": title,
+      "description": description
+    };
+    log("url --  $url \n param -  $data");
+    try {
+      final authUserResponse = await NetworkDioHttp.postDioHttpMethod(
+          context: context, url: url, data: data);
+      debugPrint('\x1b[97m Response : $authUserResponse');
+
+      return await authUserResponse['body'];
+    } catch (e) {
+      if (context != null) processIndicator.hide(context);
+      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      return "Error";
+    }
+  }
+
+  Future<HolidayModel> addHoliday(
+      {context, required toDate, required fromDate}) async {
+    Circle processIndicator = Circle();
+    final String? token = box!.get('token');
+    String url =
+        "https://seven-hills.websiteorders.com.au/orders-online/holiday-dt-api.php?tkn=536576656e48696c6c735765623f&action=A&fdt=$fromDate&tdt=$toDate";
+    // "${ApiAppConstants.apiEndPoint}${ApiAppConstants.holiday}";
+    log("url --  $url");
+    try {
+      final authUserResponse = await NetworkDioHttp.postDioHttpMethod(
+          context: context,
+          url: url,
+          data: {
+            "tkn": "$token",
+          });
+      debugPrint('\x1b[97m Response : $authUserResponse');
+      HolidayModel holidayModel =
+          await HolidayModel.fromJson(authUserResponse['body']);
+      return await holidayModel;
+    } catch (e) {
+      if (context != null) processIndicator.hide(context);
+      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      return await HolidayModel.fromJson({});
+    }
+  }
+
+  Future<HolidayModel> editHoliday(
+      {context, required toDate, required fromDate, required id}) async {
+    Circle processIndicator = Circle();
+    final String? token = box!.get('token');
+    String url =
+        "https://seven-hills.websiteorders.com.au/orders-online/holiday-dt-api.php?tkn=536576656e48696c6c735765623f&action=E&id=$id&fdt=$fromDate&tdt=$toDate";
+    // "${ApiAppConstants.apiEndPoint}${ApiAppConstants.holiday}";
+    log("url --  $url");
+    try {
+      final authUserResponse = await NetworkDioHttp.postDioHttpMethod(
+          context: context,
+          url: url,
+          data: {
+            "tkn": "$token",
+          });
+      debugPrint('\x1b[97m Response : $authUserResponse');
+      HolidayModel holidayModel =
+          await HolidayModel.fromJson(authUserResponse['body']);
+      return await holidayModel;
+    } catch (e) {
+      if (context != null) processIndicator.hide(context);
+      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      return await HolidayModel.fromJson({});
+    }
+  }
+
+  Future<HolidayModel> deleteHoliday({context, required id}) async {
+    Circle processIndicator = Circle();
+    final String? token = box!.get('token');
+    String url =
+        "https://seven-hills.websiteorders.com.au/orders-online/holiday-dt-api.php?tkn=536576656e48696c6c735765623f&action=D&id=$id";
+    log("url --  $url");
+    try {
+      final authUserResponse = await NetworkDioHttp.postDioHttpMethod(
+          context: context,
+          url: url,
+          data: {
+            "tkn": "$token",
+          });
+      debugPrint('\x1b[97m Response : $authUserResponse');
+      HolidayModel holidayModel =
+          await HolidayModel.fromJson(authUserResponse['body']);
+      return await holidayModel;
+    } catch (e) {
+      if (context != null) processIndicator.hide(context);
+      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      return await HolidayModel.fromJson({});
     }
   }
 

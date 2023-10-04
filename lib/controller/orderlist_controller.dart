@@ -26,5 +26,6 @@ class OrderListController extends GetxController {
       orderData = res["orders"];
       update();
     }
+    update();
   }
 }

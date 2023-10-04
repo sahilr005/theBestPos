@@ -15,7 +15,6 @@ void main() async {
   box = await Hive.openBox('Box');
   NetworkDioHttp.setDynamicHeader(endPoint: ApiAppConstants.apiEndPoint);
   runApp(const MyApp());
-  
 }
 
 class MyApp extends StatelessWidget {
@@ -27,7 +26,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Flutter',
       debugShowCheckedModeBanner: false,
-       builder: EasyLoading.init(),
+      builder: EasyLoading.init(),
       theme: ThemeData(
           useMaterial3: true,
           primarySwatch: Colors.pink,

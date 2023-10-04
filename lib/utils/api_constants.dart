@@ -10,4 +10,7 @@ class ApiAppConstants {
   static const String sizebase = 'size-base-api.php';
   static const String setSizebase = 'set-size-base.php';
   static const String posOrder = 'pos-orders-api.php';
+  static const String holiday = 'holiday-dt-api.php';
+  static const String holidayStatus = 'holiday-status-api.php';
+  static const String updateHoliday = 'holiday-api.php';
 }

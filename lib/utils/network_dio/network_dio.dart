@@ -68,8 +68,6 @@ class NetworkDioHttp {
         Response response =
             await _dio!.get(url, options: header ?? _cacheOptions);
         // ignore: prefer_typing_uninitialized_variables
-
-        // ignore: prefer_typing_uninitialized_variables
         var responseBody;
         if (response.statusCode == 200) {
           try {
@@ -93,16 +91,17 @@ class NetworkDioHttp {
           };
         }
       } on DioError catch (e) {
+        if (context != null) processIndicator.hide(context);
         Map<String, dynamic> responseData = {
           'body': null,
           'headers': null,
           'error_description': await _handleError(e, context,
               message: e.response?.data['message']),
         };
-        if (context != null) processIndicator.hide(context);
         return responseData;
       }
     } else {
+         if (context != null) processIndicator.hide(context);
       Map<String, dynamic> responseData = {
         'body': null,
         'headers': null,
