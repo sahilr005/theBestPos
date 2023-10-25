@@ -1,13 +1,16 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:order/config/common.dart';
+import 'package:order/model/EatInItemModel.dart';
 import 'package:order/model/HolidayStausModel.dart';
 import 'package:order/model/holiday_model.dart';
 import 'package:order/utils/api_constants.dart';
 import 'package:order/utils/common_method.dart';
 import 'package:order/utils/network_dio/network_dio.dart';
 import 'package:order/utils/process_indicator.dart';
+import 'package:order/view/login/login.dart';
 
 NetworkRepository networkRepository = NetworkRepository();
 
@@ -53,7 +56,9 @@ class NetworkRepository {
       debugPrint('\x1b[97m Response : $authUserResponse');
       return await authUserResponse['body'];
     } catch (e) {
-      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      CommonMethod().getXSnackBar(
+          "Your Token Is Expire", "Please login again", Colors.red);
+      Get.off(() => LoginScreen());
       return e.toString();
     }
   }
@@ -70,7 +75,9 @@ class NetworkRepository {
       debugPrint('\x1b[97m Response : $authUserResponse');
       return await authUserResponse['body'];
     } catch (e) {
-      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      CommonMethod().getXSnackBar(
+          "Your Token Is Expire", "Please login again", Colors.red);
+      Get.off(() => LoginScreen());
       return e.toString();
     }
   }
@@ -86,7 +93,9 @@ class NetworkRepository {
       debugPrint('\x1b[97m Response : $authUserResponse');
       return await authUserResponse['body'];
     } catch (e) {
-      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      CommonMethod().getXSnackBar(
+          "Your Token Is Expire", "Please login again", Colors.red);
+      Get.off(() => LoginScreen());
       return e.toString();
     }
   }
@@ -103,7 +112,9 @@ class NetworkRepository {
       debugPrint('\x1b[97m Response : $authUserResponse');
       return await authUserResponse['body'];
     } catch (e) {
-      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      CommonMethod().getXSnackBar(
+          "Your Token Is Expire", "Please login again", Colors.red);
+      Get.off(() => LoginScreen());
       return e.toString();
     }
   }
@@ -120,7 +131,9 @@ class NetworkRepository {
       debugPrint('\x1b[97m Response : $authUserResponse');
       return await authUserResponse['body'];
     } catch (e) {
-      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      CommonMethod().getXSnackBar(
+          "Your Token Is Expire", "Please login again", Colors.red);
+      Get.off(() => LoginScreen());
       return e.toString();
     }
   }
@@ -137,7 +150,9 @@ class NetworkRepository {
       debugPrint('\x1b[97m Response : $authUserResponse');
       return await authUserResponse['body'];
     } catch (e) {
-      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      CommonMethod().getXSnackBar(
+          "Your Token Is Expire", "Please login again", Colors.red);
+      Get.off(() => LoginScreen());
       return e.toString();
     }
   }
@@ -162,7 +177,9 @@ class NetworkRepository {
       return await holidayModel;
     } catch (e) {
       if (context != null) processIndicator.hide(context);
-      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      CommonMethod().getXSnackBar(
+          "Your Token Is Expire", "Please login again", Colors.red);
+      Get.off(() => LoginScreen());
       return await HolidayModel.fromJson({});
     }
   }
@@ -187,7 +204,10 @@ class NetworkRepository {
       return await holidayModel;
     } catch (e) {
       if (context != null) processIndicator.hide(context);
-      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      CommonMethod().getXSnackBar(
+          "Your Token Is Expire", "Please login again", Colors.red);
+      Get.off(() => LoginScreen());
+
       return await HolidayStatusModel.fromJson({});
     }
   }
@@ -212,8 +232,61 @@ class NetworkRepository {
       return await authUserResponse['body'];
     } catch (e) {
       if (context != null) processIndicator.hide(context);
-      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      CommonMethod().getXSnackBar(
+          "Your Token Is Expire", "Please login again", Colors.red);
+      Get.off(() => LoginScreen());
       return "Error";
+    }
+  }
+
+  Future<EatInItemModel> eatInItems({context}) async {
+    Circle processIndicator = Circle();
+    final String? token = box!.get('token');
+    String url =
+        "${ApiAppConstants.apiEndPoint}${ApiAppConstants.eatinItems}?tkn=$token";
+    Map data = {"tkn": "$token"};
+    log("url --  $url \n param -  $data");
+    try {
+      final authUserResponse = await NetworkDioHttp.postDioHttpMethod(
+          context: context, url: url, data: data);
+      log('\x1b[97m Response : $authUserResponse');
+      EatInItemModel eatInItemModel;
+      if (await authUserResponse['body'] != "") {
+        eatInItemModel =
+            EatInItemModel.fromJson(await authUserResponse['body']);
+      } else {
+        eatInItemModel = EatInItemModel(eatitems: []);
+      }
+      return eatInItemModel;
+    } catch (e) {
+      if (context != null) processIndicator.hide(context);
+      CommonMethod().getXSnackBar(
+          "Your Token Is Expire", "Please login again", Colors.red);
+      // Get.off(() => LoginScreen());
+      return EatInItemModel(eatitems: []);
+    }
+  }
+
+  Future<EatInItemModel> onOffItems(
+      {context, required String itemid, required String eatin}) async {
+    Circle processIndicator = Circle();
+    final String? token = box!.get('token');
+    String url =
+        "${ApiAppConstants.apiEndPoint}${ApiAppConstants.eatinItems}?tkn=$token&itemid=$itemid&eatin=$eatin";
+    log("url --  $url");
+    try {
+      final authUserResponse =
+          await NetworkDioHttp.getDioHttpMethod(context: context, url: url);
+      log('\x1b[97m Response : $authUserResponse');
+      EatInItemModel eatInItemModel =
+          EatInItemModel.fromJson(await authUserResponse['body']);
+      return eatInItemModel;
+    } catch (e) {
+      if (context != null) processIndicator.hide(context);
+      CommonMethod().getXSnackBar(
+          "Your Token Is Expire", "Please login again", Colors.red);
+      Get.off(() => LoginScreen());
+      return EatInItemModel(eatitems: []);
     }
   }
 
@@ -238,7 +311,9 @@ class NetworkRepository {
       return await holidayModel;
     } catch (e) {
       if (context != null) processIndicator.hide(context);
-      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      CommonMethod().getXSnackBar(
+          "Your Token Is Expire", "Please login again", Colors.red);
+      Get.off(() => LoginScreen());
       return await HolidayModel.fromJson({});
     }
   }
@@ -264,7 +339,9 @@ class NetworkRepository {
       return await holidayModel;
     } catch (e) {
       if (context != null) processIndicator.hide(context);
-      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      CommonMethod().getXSnackBar(
+          "Your Token Is Expire", "Please login again", Colors.red);
+      Get.off(() => LoginScreen());
       return await HolidayModel.fromJson({});
     }
   }
@@ -288,7 +365,9 @@ class NetworkRepository {
       return await holidayModel;
     } catch (e) {
       if (context != null) processIndicator.hide(context);
-      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      CommonMethod().getXSnackBar(
+          "Your Token Is Expire", "Please login again", Colors.red);
+      Get.off(() => LoginScreen());
       return await HolidayModel.fromJson({});
     }
   }
@@ -304,7 +383,9 @@ class NetworkRepository {
       debugPrint('\x1b[97m Response : $authUserResponse');
       return await authUserResponse['body'];
     } catch (e) {
-      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      CommonMethod().getXSnackBar(
+          "Your Token Is Expire", "Please login again", Colors.red);
+      Get.off(() => LoginScreen());
       return e.toString();
     }
   }
@@ -320,7 +401,9 @@ class NetworkRepository {
       debugPrint('\x1b[97m Response : $authUserResponse');
       return await authUserResponse['body'];
     } catch (e) {
-      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      CommonMethod().getXSnackBar(
+          "Your Token Is Expire", "Please login again", Colors.red);
+      Get.off(() => LoginScreen());
       return e.toString();
     }
   }
@@ -336,7 +419,9 @@ class NetworkRepository {
       debugPrint('\x1b[97m Response : $authUserResponse');
       return await authUserResponse['body'];
     } catch (e) {
-      CommonMethod().getXSnackBar("Error", e.toString(), Colors.red);
+      CommonMethod().getXSnackBar(
+          "Your Token Is Expire", "Please login again", Colors.red);
+      Get.off(() => LoginScreen());
       return e.toString();
     }
   }

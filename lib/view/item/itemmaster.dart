@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:order/controller/item_controller.dart';
 import 'package:order/utils/common_method.dart';
+import 'package:order/utils/nodata.dart';
 import 'package:order/utils/repository/network_repository.dart';
 
 class ItemMasterScreen extends StatefulWidget {
@@ -56,41 +57,45 @@ class _ItemMasterScreenState extends State<ItemMasterScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            Center(
-              child: Card(
-                child: DataTable(
-                  dataRowHeight: 60,
-                  columns: const [
-                    DataColumn(label: Text('ItemID')),
-                    DataColumn(label: Text('Name')),
-                    DataColumn(label: Text('Status')),
-                  ],
-                  rows: List<DataRow>.generate(
-                    itemList.length,
-                    (index) => DataRow(cells: [
-                      DataCell(Text(itemList[index]["itemid"].toString())),
-                      DataCell(Text(itemList[index]["itemname"].toString())),
-                      DataCell(SizedBox(
-                        width: 20,
-                        child: CupertinoSwitch(
-                            value: itemList[index]["active"] == "Y",
-                            onChanged: (value) {
-                              itemUpdate(
-                                  context: context,
-                                  status: value ? "Y" : "N",
-                                  itemID: itemList[index]["itemid"]);
-                            }),
-                      )),
-                    ]),
+        child: itemList.isEmpty
+            ? NoData()
+            : ListView(
+                shrinkWrap: true,
+                children: [
+                  Center(
+                    child: Card(
+                      child: DataTable(
+                        dataRowHeight: 60,
+                        columns: const [
+                          DataColumn(label: Text('ItemID')),
+                          DataColumn(label: Text('Name')),
+                          DataColumn(label: Text('Status')),
+                        ],
+                        rows: List<DataRow>.generate(
+                          itemList.length,
+                          (index) => DataRow(cells: [
+                            DataCell(
+                                Text(itemList[index]["itemid"].toString())),
+                            DataCell(
+                                Text(itemList[index]["itemname"].toString())),
+                            DataCell(SizedBox(
+                              width: 20,
+                              child: CupertinoSwitch(
+                                  value: itemList[index]["active"] == "Y",
+                                  onChanged: (value) {
+                                    itemUpdate(
+                                        context: context,
+                                        status: value ? "Y" : "N",
+                                        itemID: itemList[index]["itemid"]);
+                                  }),
+                            )),
+                          ]),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }

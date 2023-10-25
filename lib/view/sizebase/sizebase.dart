@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:order/config/common.dart';
 import 'package:order/controller/sizebase_controller.dart';
 import 'package:order/utils/common_method.dart';
+import 'package:order/utils/nodata.dart';
 import 'package:order/utils/repository/network_repository.dart';
 
 class SizeBaseScreen extends StatefulWidget {
@@ -66,82 +67,92 @@ class _SizeBaseScreenState extends State<SizeBaseScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Size Base"), centerTitle: true),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: GetBuilder<SizeBaseController>(
-                init: SizeBaseController(),
-                builder: (controller) {
-                  return Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Center(
-                      child: ListView.builder(
-                          itemCount: sizeList.length,
-                          itemBuilder: (context, index) {
-                            return Card(
-                              child: DataTable(
-                                columns: [
-                                  DataColumn(
-                                      label: Text(sizeList[index]["szname"])),
-                                  const DataColumn(label: Text("")),
-                                  const DataColumn(label: Text("")),
-                                ],
-                                rows: List<DataRow>.generate(
-                                    sizeList[index]["bases"].length, (ind) {
-                                  return DataRow(cells: [
-                                    DataCell(Text(
-                                        sizeList[index]["bases"][ind]["bid"])),
-                                    DataCell(Text(sizeList[index]["bases"][ind]
-                                        ["bname"])),
-                                    DataCell(Row(
-                                      children: [
-                                        Text(sizeList[index]["bases"][ind]
-                                                    ["is_active"] ==
-                                                "1"
-                                            ? "ON "
-                                            : "OFF "),
-                                        CupertinoSwitch(
-                                            value: sizeList[index]["bases"][ind]
-                                                    ["is_active"] ==
-                                                "1",
-                                            onChanged: (value) {
-                                              if (!value) {
-                                                remove(
-                                                    sizeList[index]["szid"],
-                                                    sizeList[index]["bases"]
-                                                        [ind]["bid"]);
-                                              }
-
-                                              if (value) {
-                                                dataMap.add({
-                                                  "szid": sizeList[index]
-                                                      ["szid"],
-                                                  "bid": sizeList[index]
-                                                      ["bases"][ind]["bid"],
-                                                });
-                                                updateKey(
-                                                    sizeList[index]["szid"],
-                                                    sizeList[index]["bases"]
-                                                        [ind]["bid"]);
-                                              }
-                                              setState(() {});
-                                              log("Datamap -- $dataMap");
-                                              sizeUpdate(context);
-                                            }),
+      body: sizeList.isEmpty
+          ? Center(child: NoData())
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: GetBuilder<SizeBaseController>(
+                      init: SizeBaseController(),
+                      builder: (controller) {
+                        return Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Center(
+                            child: ListView.builder(
+                                itemCount: sizeList.length,
+                                itemBuilder: (context, index) {
+                                  return Card(
+                                    child: DataTable(
+                                      columns: [
+                                        DataColumn(
+                                            label: Text(
+                                                sizeList[index]["szname"])),
+                                        const DataColumn(label: Text("")),
+                                        const DataColumn(label: Text("")),
                                       ],
-                                    )),
-                                  ]);
+                                      rows: List<DataRow>.generate(
+                                          sizeList[index]["bases"].length,
+                                          (ind) {
+                                        return DataRow(cells: [
+                                          DataCell(Text(sizeList[index]["bases"]
+                                              [ind]["bid"])),
+                                          DataCell(Text(sizeList[index]["bases"]
+                                              [ind]["bname"])),
+                                          DataCell(Row(
+                                            children: [
+                                              Text(sizeList[index]["bases"][ind]
+                                                          ["is_active"] ==
+                                                      "1"
+                                                  ? "ON "
+                                                  : "OFF "),
+                                              CupertinoSwitch(
+                                                  value: sizeList[index]
+                                                              ["bases"][ind]
+                                                          ["is_active"] ==
+                                                      "1",
+                                                  onChanged: (value) {
+                                                    if (!value) {
+                                                      remove(
+                                                          sizeList[index]
+                                                              ["szid"],
+                                                          sizeList[index]
+                                                                  ["bases"][ind]
+                                                              ["bid"]);
+                                                    }
+
+                                                    if (value) {
+                                                      dataMap.add({
+                                                        "szid": sizeList[index]
+                                                            ["szid"],
+                                                        "bid": sizeList[index]
+                                                                ["bases"][ind]
+                                                            ["bid"],
+                                                      });
+                                                      updateKey(
+                                                          sizeList[index]
+                                                              ["szid"],
+                                                          sizeList[index]
+                                                                  ["bases"][ind]
+                                                              ["bid"]);
+                                                    }
+                                                    setState(() {});
+                                                    log("Datamap -- $dataMap");
+                                                    sizeUpdate(context);
+                                                  }),
+                                            ],
+                                          )),
+                                        ]);
+                                      }),
+                                    ),
+                                  );
                                 }),
-                              ),
-                            );
-                          }),
-                    ),
-                  );
-                }),
-          ),
-        ],
-      ),
+                          ),
+                        );
+                      }),
+                ),
+              ],
+            ),
     );
   }
 

@@ -8,6 +8,7 @@ import 'package:order/view/home/home.dart';
 import 'package:order/view/login/login.dart';
 // ignore: depend_on_referenced_packages
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:upgrader/upgrader.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,7 +32,9 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           primarySwatch: Colors.pink,
           fontFamily: "Cera Pro"),
-      home: token != null ? const HomeScreen() : const LoginScreen(),
+      home: UpgradeAlert(
+        upgrader: Upgrader(dialogStyle: UpgradeDialogStyle.cupertino),
+        child: token != null ? const HomeScreen() : const LoginScreen()),
     );
   }
 }

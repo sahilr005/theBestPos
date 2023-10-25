@@ -1,13 +1,17 @@
+import 'dart:developer';
+
 import 'package:clay_containers/clay_containers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:order/config/common.dart';
 import 'package:order/view/category/category_master.dart';
+import 'package:order/view/eatin/eatin_master.dart';
 import 'package:order/view/holiday/holiday.dart';
 import 'package:order/view/item/itemmaster.dart';
 import 'package:order/view/login/login.dart';
 import 'package:order/view/order/orderlist.dart';
 import 'package:order/view/reporting/reporting.dart';
+import 'package:order/view/settings/settings.dart';
 import 'package:order/view/sizebase/sizebase.dart';
 import 'package:order/view/toppings/topping_master.dart';
 
@@ -18,29 +22,83 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+enum menuName {
+  orderList,
+  itemMaster,
+  eatIn,
+  holidayList,
+  sizeBase,
+  topping,
+  category,
+  reporting
+}
+
 class _HomeScreenState extends State<HomeScreen> {
   Color baseColor = const Color(0xFFF2F2F2);
+
+  itemSet() {
+    if (box!.get(menuName.orderList.name.toString()) == null) {
+      box!.put(menuName.orderList.name.toString(), true);
+    }
+    if (box!.get(menuName.itemMaster.name.toString()) == null) {
+      box!.put(menuName.itemMaster.name, false);
+    }
+    if (box!.get(menuName.eatIn.name) == null) {
+      box!.put(menuName.eatIn.name, false);
+    }
+    if (box!.get(menuName.holidayList.name) == null) {
+      box!.put(menuName.holidayList.name, false);
+    }
+    if (box!.get(menuName.sizeBase.name) == null) {
+      box!.put(menuName.sizeBase.name, true);
+    }
+    if (box!.get(menuName.topping.name) == null) {
+      box!.put(menuName.topping.name, true);
+    }
+    if (box!.get(menuName.category.name) == null) {
+      box!.put(menuName.category.name, true);
+    }
+    if (box!.get(menuName.reporting.name) == null) {
+      box!.put(menuName.reporting.name, false);
+    }
+    menuGet();
+  }
+
+  @override
+  void initState() {
+    itemSet();
+    setState(() {});
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: Drawer(
-        child: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              DrawerHeader(
-                // decoration: BoxDecoration(color: appColor.withOpacity(0.2)),
-                child: Image.asset(
-                    "assets/fwdposlogo/the-best-POS_final-logo.png",
-                    height: Get.height * .3),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              // decoration: BoxDecoration(color: appColor.withOpacity(0.2)),
+              child: Image.asset(
+                  "assets/fwdposlogo/the-best-POS_final-logo.png",
+                  height: Get.height * .3),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child: Card(
+                child: ListTile(
+                  onTap: () {
+                    Get.to(() => SettingsScreen())!.whenComplete(() {
+                      menuGet();
+                      setState(() {});
+                    });
+                  },
+                  title: Text("Settings"),
+                ),
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: SelectOptions(),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       appBar: AppBar(
@@ -83,75 +141,97 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class SelectOptions extends StatelessWidget {
+class SelectOptions extends StatefulWidget {
   const SelectOptions({
     Key? key,
   }) : super(key: key);
 
   @override
+  State<SelectOptions> createState() => _SelectOptionsState();
+}
+
+class _SelectOptionsState extends State<SelectOptions> {
+  @override
   Widget build(BuildContext context) {
-    return ListView(
-      shrinkWrap: true,
-      padding: EdgeInsets.zero,
-      physics: const NeverScrollableScrollPhysics(),
-      children: [
-        Card(
-          child: ListTile(
-            onTap: () {
-              Get.to(() => OrderListScreen());
-            },
-            title: const Text("Order List"),
-          ),
-        ),
-        Card(
-          child: ListTile(
-            onTap: () {
-              Get.to(() => const ItemMasterScreen());
-            },
-            title: const Text("Item Master"),
-          ),
-        ),
-        Card(
-          child: ListTile(
-            onTap: () {
-              Get.to(() => HolidayMaster());
-            },
-            title: const Text("Holiday Master"),
-          ),
-        ),
-        Card(
-          child: ListTile(
-            onTap: () {
-              Get.to(() => const SizeBaseScreen());
-            },
-            title: const Text("Size Base Setting"),
-          ),
-        ),
-        Card(
-          child: ListTile(
-            onTap: () {
-              Get.to(() => const ToppingMasterScreen());
-            },
-            title: const Text("Topping Master"),
-          ),
-        ),
-        Card(
-          child: ListTile(
-            onTap: () {
-              Get.to(() => const CategoryMasterScreen());
-            },
-            title: const Text("Category Master"),
-          ),
-        ),
-        Card(
-          child: ListTile(
-            onTap: () {
-              Get.to(() => const ReportingScreen());
-            },
-            title: const Text("Reporting"),
-          ),
-        ),
-      ],
-    );
+    log(menuVal.value.toString());
+    return Obx(() => ListView(
+          shrinkWrap: true,
+          padding: EdgeInsets.zero,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            if (menuVal.value[0])
+              Card(
+                child: ListTile(
+                  onTap: () {
+                    Get.to(() => OrderListScreen());
+                  },
+                  title: const Text("Order List"),
+                ),
+              ),
+            if (menuVal.value[1])
+              Card(
+                child: ListTile(
+                  onTap: () {
+                    Get.to(() => const ItemMasterScreen());
+                  },
+                  title: const Text("Item Master"),
+                ),
+              ),
+            if (menuVal.value[2])
+              Card(
+                child: ListTile(
+                  onTap: () {
+                    Get.to(() => const EatinScreen());
+                  },
+                  title: const Text("EatIn "),
+                ),
+              ),
+            if (menuVal.value[3])
+              Card(
+                child: ListTile(
+                  onTap: () {
+                    Get.to(() => HolidayMaster());
+                  },
+                  title: const Text("Holiday Master"),
+                ),
+              ),
+            if (menuVal.value[4])
+              Card(
+                child: ListTile(
+                  onTap: () {
+                    Get.to(() => const SizeBaseScreen());
+                  },
+                  title: const Text("Size Base Setting"),
+                ),
+              ),
+            if (menuVal.value[5])
+              Card(
+                child: ListTile(
+                  onTap: () {
+                    Get.to(() => const ToppingMasterScreen());
+                  },
+                  title: const Text("Topping Master"),
+                ),
+              ),
+            if (menuVal.value[6])
+              Card(
+                child: ListTile(
+                  onTap: () {
+                    Get.to(() => const CategoryMasterScreen());
+                  },
+                  title: const Text("Category Master"),
+                ),
+              ),
+            if (menuVal.value[7])
+              Card(
+                child: ListTile(
+                  onTap: () {
+                    Get.to(() => const ReportingScreen());
+                  },
+                  title: const Text("Reporting"),
+                ),
+              ),
+          ],
+        ));
   }
 }

@@ -271,112 +271,118 @@ class _HolidayMasterState extends State<HolidayMaster> {
               label: Text("Add Holiday"),
             ),
           ),
+          SizedBox(
+            width: 4,
+          )
         ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              padding: EdgeInsets.all(10),
-              child: Column(
-                children: [
-                  TextField(
-                    controller: titleController,
-                    decoration: InputDecoration(
-                      labelText: "Holiday Title",
-                      border: OutlineInputBorder(),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: titleController,
+                      decoration: InputDecoration(
+                        labelText: "Holiday Title",
+                        border: OutlineInputBorder(),
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 10),
-                  // HtmlWidget(
-                  //   """${descController.text}""",
-                  // ),
-                  TextField(
-                    controller: descController,
-                    decoration: InputDecoration(
-                      labelText: "Description",
-                      border: OutlineInputBorder(),
+                    SizedBox(height: 10),
+                    // HtmlWidget(
+                    //   """${descController.text}""",
+                    // ),
+                    TextField(
+                      controller: descController,
+                      decoration: InputDecoration(
+                        labelText: "Description",
+                        border: OutlineInputBorder(),
+                      ),
                     ),
-                  ),
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    value: isHoliday,
-                    onChanged: (v) {
-                      isHoliday = v;
-                      setState(() {});
-                    },
-                    title: Text("Is Holiday?"),
-                  ),
-                  OutlinedButton(
-                      onPressed: () async {
-                        await updateData();
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      value: isHoliday,
+                      onChanged: (v) {
+                        isHoliday = v;
+                        setState(() {});
                       },
-                      child: Text("Update")),
-                ],
-              ),
-            ),
-            // Divider(),
-            ExpansionTile(
-              tilePadding: EdgeInsets.zero,
-              title: Text(
-                "Holiday Date",
-                style: TextStyle(fontSize: 18),
-              ),
-              children: [
-                Obx(() => holidayModel.value.holidays != null
-                    ? ListView.builder(
-                        itemCount: holidayModel.value.holidays!.length,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            child: ListTile(
-                              title: Text(holidayModel
-                                      .value.holidays![index].fdt
-                                      .toString() +
-                                  " - " +
-                                  holidayModel.value.holidays![index].tdt
-                                      .toString()),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  InkWell(
-                                      onTap: () async {
-                                        await _showEditDialog(
-                                          holidayModel
-                                              .value.holidays![index].id!,
-                                          holidayModel
-                                              .value.holidays![index].fdt!,
-                                          holidayModel
-                                              .value.holidays![index].tdt!,
-                                        );
-                                      },
-                                      child:
-                                          Icon(Icons.edit, color: Colors.blue)),
-                                  InkWell(
-                                      onTap: () async {
-                                        await showDeleteConfirmationDialog(
-                                          holidayModel
-                                              .value.holidays![index].id!,
-                                        );
-                                      },
-                                      child: Icon(Icons.delete,
-                                          color: Colors.red)),
-                                ],
-                              ),
-                            ),
-                          );
+                      title: Text("Is Holiday?"),
+                    ),
+                    OutlinedButton(
+                        onPressed: () async {
+                          await updateData();
                         },
-                      )
-                    : SizedBox()),
-              ],
-            )
-          ],
+                        child: Text("Update")),
+                  ],
+                ),
+              ),
+              // Divider(),
+              ExpansionTile(
+                tilePadding: EdgeInsets.zero,
+                title: Text(
+                  "Holiday Date",
+                  style: TextStyle(fontSize: 18),
+                ),
+                children: [
+                  Obx(() => holidayModel.value.holidays != null
+                      ? ListView.builder(
+                          itemCount: holidayModel.value.holidays!.length,
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return Card(
+                              child: ListTile(
+                                title: Text(holidayModel
+                                        .value.holidays![index].fdt
+                                        .toString() +
+                                    " - " +
+                                    holidayModel.value.holidays![index].tdt
+                                        .toString()),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    InkWell(
+                                        onTap: () async {
+                                          await _showEditDialog(
+                                            holidayModel
+                                                .value.holidays![index].id!,
+                                            holidayModel
+                                                .value.holidays![index].fdt!,
+                                            holidayModel
+                                                .value.holidays![index].tdt!,
+                                          );
+                                        },
+                                        child: Icon(Icons.edit,
+                                            color: Colors.blue)),
+                                    InkWell(
+                                        onTap: () async {
+                                          await showDeleteConfirmationDialog(
+                                            holidayModel
+                                                .value.holidays![index].id!,
+                                          );
+                                        },
+                                        child: Icon(Icons.delete,
+                                            color: Colors.red)),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        )
+                      : SizedBox()),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );

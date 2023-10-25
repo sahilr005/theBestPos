@@ -83,120 +83,132 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                       orderDetailsData[0]["WebDueTime"]))),
                             ),
                             height(10),
-                            ListView.builder(
-                                itemCount: orderDetailsData[0]["items"].length,
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemBuilder: (_, index) {
-                                  return Card(
-                                    color: Colors.blue,
-                                    child: Padding(
-                                        padding: const EdgeInsets.all(15.0),
-                                        child: Table(
-                                          children: [
-                                            TableRow(children: [
-                                              Text(
-                                                orderDetailsData[0]["items"]
-                                                    [index]["WebItem"],
-                                                style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                              Text(
-                                                orderDetailsData[0]["items"]
-                                                    [index]["WebItemBase"],
-                                                style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                              Text(
-                                                orderDetailsData[0]["items"]
-                                                    [index]["WebItemPrice"],
-                                                style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ]),
-                                            TableRow(
-                                                children: orderDetailsData[0]
-                                                                ["items"][index]
-                                                            ["WebToppingItems"]
-                                                        .isEmpty
-                                                    ? [
-                                                        const SizedBox(),
-                                                        const SizedBox(),
-                                                        const SizedBox(),
-                                                      ]
-                                                    : [
-                                                        const Divider(),
-                                                        const Divider(),
-                                                        const Divider(),
-                                                      ]),
-                                            if (orderDetailsData[0]["items"]
-                                                            [index]
-                                                        ["WebToppingItems"] !=
-                                                    null &&
-                                                orderDetailsData[0]["items"]
-                                                            [index]
-                                                        ["WebToppingItems"]
-                                                    .isNotEmpty)
+                            if (orderDetailsData[0]["items"] != null)
+                              ListView.builder(
+                                  itemCount:
+                                      orderDetailsData[0]["items"].length,
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemBuilder: (_, index) {
+                                    return Card(
+                                      color: Colors.blue,
+                                      child: Padding(
+                                          padding: const EdgeInsets.all(15.0),
+                                          child: Table(
+                                            children: [
                                               TableRow(children: [
-                                                ListView.builder(
-                                                  shrinkWrap: true,
-                                                  itemCount: orderDetailsData[0]
-                                                              ["items"][index]
-                                                          ["WebToppingItems"]
-                                                      .length,
-                                                  itemBuilder: (context, ind) {
-                                                    return Text(orderDetailsData[
-                                                                            0][
-                                                                        "items"]
-                                                                    [
-                                                                    index]
-                                                                [
-                                                                "WebToppingItems"]
-                                                            [ind]["WebTopping"]
-                                                        .toString());
-                                                  },
+                                                Text(
+                                                  orderDetailsData[0]["items"]
+                                                      [index]["WebItem"],
+                                                  style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                                 ),
-                                                ListView.builder(
-                                                  shrinkWrap: true,
-                                                  itemCount: orderDetailsData[0]
-                                                              ["items"][index]
-                                                          ["WebToppingItems"]
-                                                      .length,
-                                                  itemBuilder: (context, ind) {
-                                                    return Text(
-                                                        "${orderDetailsData[0]["items"][index]["WebToppingItems"][ind]["WebAddRemove"]}1");
-                                                  },
+                                                Text(
+                                                  orderDetailsData[0]["items"]
+                                                      [index]["WebItemBase"],
+                                                  style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                                 ),
-                                                ListView.builder(
-                                                  shrinkWrap: true,
-                                                  itemCount: orderDetailsData[0]
-                                                              ["items"][index]
-                                                          ["WebToppingItems"]
-                                                      .length,
-                                                  itemBuilder: (context, ind) {
-                                                    return Text(orderDetailsData[
-                                                                            0][
-                                                                        "items"]
-                                                                    [
-                                                                    index]
-                                                                [
-                                                                "WebToppingItems"]
-                                                            [
-                                                            ind]["WebToppingPrice"]
-                                                        .toString());
-                                                  },
+                                                Text(
+                                                  orderDetailsData[0]["items"]
+                                                      [index]["WebItemPrice"],
+                                                  style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                                 ),
                                               ]),
-                                          ],
-                                        )),
-                                  );
-                                }),
+                                              TableRow(
+                                                  children: orderDetailsData[0]
+                                                                      ["items"]
+                                                                  [index][
+                                                              "WebToppingItems"]
+                                                          .isEmpty
+                                                      ? [
+                                                          const SizedBox(),
+                                                          const SizedBox(),
+                                                          const SizedBox(),
+                                                        ]
+                                                      : [
+                                                          const Divider(),
+                                                          const Divider(),
+                                                          const Divider(),
+                                                        ]),
+                                              if (orderDetailsData[0]["items"]
+                                                              [index]
+                                                          ["WebToppingItems"] !=
+                                                      null &&
+                                                  orderDetailsData[0]["items"]
+                                                              [index]
+                                                          ["WebToppingItems"]
+                                                      .isNotEmpty)
+                                                TableRow(children: [
+                                                  ListView.builder(
+                                                    shrinkWrap: true,
+                                                    itemCount: orderDetailsData[
+                                                                    0]["items"]
+                                                                [index]
+                                                            ["WebToppingItems"]
+                                                        .length,
+                                                    itemBuilder:
+                                                        (context, ind) {
+                                                      return Text(orderDetailsData[
+                                                                              0]
+                                                                          [
+                                                                          "items"]
+                                                                      [
+                                                                      index]
+                                                                  [
+                                                                  "WebToppingItems"]
+                                                              [
+                                                              ind]["WebTopping"]
+                                                          .toString());
+                                                    },
+                                                  ),
+                                                  ListView.builder(
+                                                    shrinkWrap: true,
+                                                    itemCount: orderDetailsData[
+                                                                    0]["items"]
+                                                                [index]
+                                                            ["WebToppingItems"]
+                                                        .length,
+                                                    itemBuilder:
+                                                        (context, ind) {
+                                                      return Text(
+                                                          "${orderDetailsData[0]["items"][index]["WebToppingItems"][ind]["WebAddRemove"]}1");
+                                                    },
+                                                  ),
+                                                  ListView.builder(
+                                                    shrinkWrap: true,
+                                                    itemCount: orderDetailsData[
+                                                                    0]["items"]
+                                                                [index]
+                                                            ["WebToppingItems"]
+                                                        .length,
+                                                    itemBuilder:
+                                                        (context, ind) {
+                                                      return Text(orderDetailsData[
+                                                                              0]
+                                                                          [
+                                                                          "items"]
+                                                                      [
+                                                                      index]
+                                                                  [
+                                                                  "WebToppingItems"][ind]
+                                                              [
+                                                              "WebToppingPrice"]
+                                                          .toString());
+                                                    },
+                                                  ),
+                                                ]),
+                                            ],
+                                          )),
+                                    );
+                                  }),
                           ]),
               ),
             ),

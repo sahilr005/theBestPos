@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:order/utils/common_method.dart';
+import 'package:order/utils/nodata.dart';
 import 'package:order/utils/repository/network_repository.dart';
 
 class ToppingMasterScreen extends StatefulWidget {
@@ -18,7 +19,7 @@ class _ToppingMasterScreenState extends State<ToppingMasterScreen> {
       toppingData = res["toppings"];
       setState(() {});
     } else {
-      CommonMethod().getXSnackBar('No Data', res["status"]??"", Colors.red);
+      CommonMethod().getXSnackBar('No Data', res["status"] ?? "", Colors.red);
     }
   }
 
@@ -45,32 +46,34 @@ class _ToppingMasterScreenState extends State<ToppingMasterScreen> {
         child: ListView(
           shrinkWrap: true,
           children: [
-            Center(
-              child: Card(
-                child: DataTable(
-                  dataRowHeight: 60,
-                  columns: const [
-                    DataColumn(label: Text('ItemID')),
-                    DataColumn(label: Text('Name')),
-                    DataColumn(label: Text('Status')),
-                  ],
-                  rows: List<DataRow>.generate(
-                    toppingData.length,
-                    (index) => DataRow(cells: [
-                      DataCell(Text(index.toString())),
-                      DataCell(Text(toppingData[index]["Name"].toString())),
-                      DataCell(CupertinoSwitch(
-                          value: toppingData[index]["active"] == "Y",
-                          onChanged: (value) {
-                            toppingUpdate(context,
-                                name: toppingData[index]["Name"],
-                                status: value ? "Y" : "N");
-                          })),
-                    ]),
+            if (toppingData.isEmpty) NoData(),
+            if (toppingData.isNotEmpty)
+              Center(
+                child: Card(
+                  child: DataTable(
+                    dataRowHeight: 60,
+                    columns: const [
+                      DataColumn(label: Text('ItemID')),
+                      DataColumn(label: Text('Name')),
+                      DataColumn(label: Text('Status')),
+                    ],
+                    rows: List<DataRow>.generate(
+                      toppingData.length,
+                      (index) => DataRow(cells: [
+                        DataCell(Text(index.toString())),
+                        DataCell(Text(toppingData[index]["Name"].toString())),
+                        DataCell(CupertinoSwitch(
+                            value: toppingData[index]["active"] == "Y",
+                            onChanged: (value) {
+                              toppingUpdate(context,
+                                  name: toppingData[index]["Name"],
+                                  status: value ? "Y" : "N");
+                            })),
+                      ]),
+                    ),
                   ),
                 ),
               ),
-            ),
           ],
         ),
       ),

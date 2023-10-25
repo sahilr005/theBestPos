@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:order/utils/common_method.dart';
+import 'package:order/utils/nodata.dart';
 import 'package:order/utils/repository/network_repository.dart';
 
 class CategoryMasterScreen extends StatefulWidget {
@@ -16,10 +16,10 @@ class _CategoryMasterScreenState extends State<CategoryMasterScreen> {
     var res = await networkRepository.categoryApi(context);
     if (res["categories"] != null) {
       categoryData = res["categories"];
-      setState(() {});
     } else {
-      CommonMethod().getXSnackBar('Error', res["status"], Colors.red);
+      // CommonMethod().getXSnackBar('Error', res["status"], Colors.red);
     }
+    setState(() {});
   }
 
   categoryUpdate(context, {required String catid, status}) async {
@@ -42,37 +42,39 @@ class _CategoryMasterScreenState extends State<CategoryMasterScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            Center(
-              child: Card(
-                child: DataTable(
-                  dataRowHeight: 60,
-                  columns: const [
-                    DataColumn(label: Text('ItemID')),
-                    DataColumn(label: Text('Name')),
-                    DataColumn(label: Text('Status')),
-                  ],
-                  rows: List<DataRow>.generate(
-                    categoryData.length,
-                    (index) => DataRow(cells: [
-                      DataCell(Text(index.toString())),
-                      DataCell(Text(categoryData[index]["name"])),
-                      DataCell(CupertinoSwitch(
-                          value: categoryData[index]["active"] == "Y",
-                          onChanged: (value) {
-                            categoryUpdate(context,
-                                catid: categoryData[index]["catid"],
-                                status: value ? "Y" : "N");
-                          })),
-                    ]),
+        child: categoryData.isEmpty
+            ? NoData()
+            : ListView(
+                shrinkWrap: true,
+                children: [
+                  Center(
+                    child: Card(
+                      child: DataTable(
+                        dataRowHeight: 60,
+                        columns: const [
+                          DataColumn(label: Text('ItemID')),
+                          DataColumn(label: Text('Name')),
+                          DataColumn(label: Text('Status')),
+                        ],
+                        rows: List<DataRow>.generate(
+                          categoryData.length,
+                          (index) => DataRow(cells: [
+                            DataCell(Text(index.toString())),
+                            DataCell(Text(categoryData[index]["name"])),
+                            DataCell(CupertinoSwitch(
+                                value: categoryData[index]["active"] == "Y",
+                                onChanged: (value) {
+                                  categoryUpdate(context,
+                                      catid: categoryData[index]["catid"],
+                                      status: value ? "Y" : "N");
+                                })),
+                          ]),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }
