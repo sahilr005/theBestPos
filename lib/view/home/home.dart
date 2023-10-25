@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:order/config/common.dart';
 import 'package:order/view/category/category_master.dart';
+import 'package:order/view/daywise/daywise.dart';
 import 'package:order/view/eatin/eatin_master.dart';
 import 'package:order/view/holiday/holiday.dart';
 import 'package:order/view/item/itemmaster.dart';
@@ -30,7 +31,8 @@ enum menuName {
   sizeBase,
   topping,
   category,
-  reporting
+  reporting,
+  daywise,
 }
 
 class _HomeScreenState extends State<HomeScreen> {
@@ -60,6 +62,9 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     if (box!.get(menuName.reporting.name) == null) {
       box!.put(menuName.reporting.name, false);
+    }
+    if (box!.get(menuName.daywise.name) == null) {
+      box!.put(menuName.daywise.name, false);
     }
     menuGet();
   }
@@ -175,6 +180,15 @@ class _SelectOptionsState extends State<SelectOptions> {
                     Get.to(() => const ItemMasterScreen());
                   },
                   title: const Text("Item Master"),
+                ),
+              ),
+            if (menuVal.value[8])
+              Card(
+                child: ListTile(
+                  onTap: () {
+                    Get.to(() => const DayWiseReportScreen());
+                  },
+                  title: const Text("Daywise Item "),
                 ),
               ),
             if (menuVal.value[2])

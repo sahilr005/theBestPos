@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:order/config/common.dart';
 import 'package:order/model/EatInItemModel.dart';
 import 'package:order/model/HolidayStausModel.dart';
+import 'package:order/model/dayitemsModel.dart';
 import 'package:order/model/holiday_model.dart';
 import 'package:order/utils/api_constants.dart';
 import 'package:order/utils/common_method.dart';
@@ -264,6 +265,33 @@ class NetworkRepository {
           "Your Token Is Expire", "Please login again", Colors.red);
       // Get.off(() => LoginScreen());
       return EatInItemModel(eatitems: []);
+    }
+  }
+
+  Future<DayitemsModel> datWiseItem({context}) async {
+    Circle processIndicator = Circle();
+    final String? token = box!.get('token');
+    String url =
+        "${ApiAppConstants.apiEndPoint}${ApiAppConstants.daywiseItem}?tkn=$token";
+    Map data = {"tkn": "$token"};
+    log("url --  $url");
+    try {
+      final authUserResponse = await NetworkDioHttp.postDioHttpMethod(
+          context: context, url: url, data: data);
+      log('\x1b[97m Response : $authUserResponse');
+      DayitemsModel dayitemsModel;
+      if (await authUserResponse['body'] != "") {
+        dayitemsModel = DayitemsModel.fromJson(await authUserResponse['body']);
+      } else {
+        dayitemsModel = DayitemsModel(dayitems: []);
+      }
+      return dayitemsModel;
+    } catch (e) {
+      if (context != null) processIndicator.hide(context);
+      CommonMethod().getXSnackBar(
+          "Your Token Is Expire", "Please login again", Colors.red);
+      // Get.off(() => LoginScreen());
+      return DayitemsModel(dayitems: []);
     }
   }
 

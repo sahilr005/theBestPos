@@ -16,6 +16,7 @@ menuGet() async {
   menuVal.add(box!.get(menuName.topping.name) ?? true);
   menuVal.add(box!.get(menuName.category.name) ?? true);
   menuVal.add(box!.get(menuName.reporting.name) ?? false);
+  menuVal.add(box!.get(menuName.daywise.name) ?? false);
 }
 
 class SettingsScreen extends StatefulWidget {
@@ -122,6 +123,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     value: box!.get(menuName.reporting.name),
                     onChanged: (a) {
                       box!.put(menuName.reporting.name, a);
+                      setState(() {});
+                    }),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                title: Text("Day Wise Item"),
+                trailing: CupertinoSwitch(
+                    value: box!.get(menuName.daywise.name),
+                    onChanged: (a) {
+                      box!.put(menuName.daywise.name, a);
                       setState(() {});
                     }),
               ),
