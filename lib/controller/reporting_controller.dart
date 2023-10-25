@@ -48,7 +48,7 @@ class ReportingController extends GetxController {
 
   Future<bool> shopNameGet(BuildContext context) async {
     var date = DateTime.now();
-    var newDate = DateTime(date.year, date.month, date.day - 1);
+    var newDate = DateTime(date.year, date.month, date.day);
     var tdt =
         "${DateFormat.d().format(newDate)}-${DateFormat.M().format(newDate)}-${DateFormat.y().format(newDate)}";
     var fdt =
@@ -75,6 +75,7 @@ class ReportingController extends GetxController {
 
   Future<bool> reportingAPI(BuildContext context, {shop}) async {
     DateTime td = toDate;
+
     var tdt =
         "${DateFormat.d().format(td)}-${DateFormat.M().format(td)}-${DateFormat.y().format(td)}";
     var fdt =

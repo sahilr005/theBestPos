@@ -61,8 +61,10 @@ class _ReportingScreenState extends State<ReportingScreen> {
                             lastDate: DateTime.now(),
                           ))!;
                           // ignore: use_build_context_synchronously
+                          // controller
+                          //     .reportingAPI(context)
                           controller
-                              .reportingAPI(context)
+                              .shopNameGet(context)
                               .then((value) => setState(() {}));
                           controller.update();
                         },
@@ -82,8 +84,10 @@ class _ReportingScreenState extends State<ReportingScreen> {
                             lastDate: DateTime.now(),
                           ))!;
                           // ignore: use_build_context_synchronously
+                          // controller
+                          //     .reportingAPI(context)
                           controller
-                              .reportingAPI(context)
+                              .shopNameGet(context)
                               .then((value) => setState(() {}));
                           controller.update();
                         },
@@ -613,8 +617,10 @@ class _ReportingScreenState extends State<ReportingScreen> {
                     processIndicator.show(context);
                     controller.shopName =
                         controller.shopNameSet.toList()[index];
+                    // controller
+                    //     .reportingAPI(context)
                     controller
-                        .reportingAPI(context)
+                        .shopNameGet(context)
                         .then((value) => setState(() {
                               // processIndicator.hide(context);
                             }));
