@@ -295,6 +295,37 @@ class NetworkRepository {
     }
   }
 
+  Future<DayitemsModel> datWiseItemUpdate({context,itemid,daystr}) async {
+    Circle processIndicator = Circle();
+    final String? token = box!.get('token');
+    String url =
+        "${ApiAppConstants.apiEndPoint}${ApiAppConstants.daywiseItem}?tkn=$token";
+    Map data = {"tkn": "$token",
+     "itemid": itemid,
+     "daystr":daystr
+    };
+    log("url --  $url");
+    try {
+      final authUserResponse = await NetworkDioHttp.postDioHttpMethod(
+          context: context, url: url, data: data);
+      log('\x1b[97m Response : $authUserResponse');
+      DayitemsModel dayitemsModel;
+      if (await authUserResponse['body'] != "") {
+        dayitemsModel = DayitemsModel.fromJson(await authUserResponse['body']);
+      } else {
+        dayitemsModel = DayitemsModel(dayitems: []);
+      }
+      return dayitemsModel;
+    } catch (e) {
+      if (context != null) processIndicator.hide(context);
+      CommonMethod().getXSnackBar(
+          "Your Token Is Expire", "Please login again", Colors.red);
+      // Get.off(() => LoginScreen());
+      return DayitemsModel(dayitems: []);
+    }
+  }
+
+
   Future<EatInItemModel> onOffItems(
       {context, required String itemid, required String eatin}) async {
     Circle processIndicator = Circle();

@@ -61,7 +61,8 @@ class _ReportingScreenState extends State<ReportingScreen> {
                             lastDate: DateTime.now(),
                           ))!;
                           // ignore: use_build_context_synchronously
-                          controller
+                         await controller.shopNameGetOnly(context);
+                        await  controller
                               .reportingAPI(context)
                               .then((value) => setState(() {}));
                           controller.update();
@@ -82,7 +83,8 @@ class _ReportingScreenState extends State<ReportingScreen> {
                             lastDate: DateTime.now(),
                           ))!;
                           // ignore: use_build_context_synchronously
-                          controller
+                          await controller.shopNameGetOnly(context);
+                         await controller
                               .reportingAPI(context)
                          
                               .then((value) => setState(() {}));
@@ -594,7 +596,7 @@ class _ReportingScreenState extends State<ReportingScreen> {
   }
 
   Future<dynamic> shopNameDialog(
-      ReportingController controller, BuildContext context) {
+      ReportingController controller, BuildContext context) async{
     Circle processIndicator = Circle();
 
     return showDialog(
@@ -610,11 +612,12 @@ class _ReportingScreenState extends State<ReportingScreen> {
               itemCount: controller.shopNameSet.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  onTap: () {
+                  onTap: () async{
                     processIndicator.show(context);
                     controller.shopName =
                         controller.shopNameSet.toList()[index];
-                    controller
+                        await controller.shopNameGetOnly(context);
+                 await   controller
                         .reportingAPI(context)
 
                         .then((value) => setState(() {
