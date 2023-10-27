@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+13
+version: 2.0.0+14
 
 environment:
   sdk: '>=2.18.4 <3.0.0'
@@ -29,8 +29,12 @@ dependencies:
   flutter_easyloading: ^3.0.5
   clay_containers: ^0.3.2
   hive: ^2.2.3
+  url_launcher: 
   flutter_widget_from_html: ^0.10.5+3
   upgrader: ^8.2.0
+  firebase_core: ^2.20.0
+  package_info_plus: ^4.2.0
+  cloud_firestore: ^4.11.0
 
 dev_dependencies:
   flutter_test:

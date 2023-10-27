@@ -1,9 +1,12 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:clay_containers/clay_containers.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:order/config/common.dart';
+import 'package:order/main.dart';
 import 'package:order/view/category/category_master.dart';
 import 'package:order/view/daywise/daywise.dart';
 import 'package:order/view/eatin/eatin_master.dart';
@@ -72,8 +75,25 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     itemSet();
+    versionCheck();
     setState(() {});
     super.initState();
+  }
+
+  versionCheck() async {
+    if (Platform.isIOS) {
+      DocumentSnapshot appConfig = await FirebaseFirestore.instance
+          .collection("AppConfig")
+          .doc("v1Bjv4AI7GgWui1jFJQm")
+          .get();
+      if (packageInfo != null) {
+        if (packageInfo!.version.toString() != await appConfig.get("version")) {
+          Future.delayed(Duration.zero, () {
+            showUpgradeDialog(context);
+          });
+        }
+      }
+    }
   }
 
   @override

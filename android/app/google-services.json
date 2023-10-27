@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "90756776810",
+    "project_id": "the-best--pos-admin",
+    "storage_bucket": "the-best--pos-admin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:90756776810:android:03942847d0d001aa255b13",
+        "android_client_info": {
+          "package_name": "com.best.pos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNfPnPEF00WnysCGmK1RNQeSbp4ln50_E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
