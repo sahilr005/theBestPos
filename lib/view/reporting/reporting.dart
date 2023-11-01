@@ -61,8 +61,8 @@ class _ReportingScreenState extends State<ReportingScreen> {
                             lastDate: DateTime.now(),
                           ))!;
                           // ignore: use_build_context_synchronously
-                         await controller.shopNameGetOnly(context);
-                        await  controller
+                          //  await controller.shopNameGetOnly(context);
+                          await controller
                               .reportingAPI(context)
                               .then((value) => setState(() {}));
                           controller.update();
@@ -83,10 +83,9 @@ class _ReportingScreenState extends State<ReportingScreen> {
                             lastDate: DateTime.now(),
                           ))!;
                           // ignore: use_build_context_synchronously
-                          await controller.shopNameGetOnly(context);
-                         await controller
+                          // await controller.shopNameGetOnly(context);
+                          await controller
                               .reportingAPI(context)
-                         
                               .then((value) => setState(() {}));
                           controller.update();
                         },
@@ -596,7 +595,7 @@ class _ReportingScreenState extends State<ReportingScreen> {
   }
 
   Future<dynamic> shopNameDialog(
-      ReportingController controller, BuildContext context) async{
+      ReportingController controller, BuildContext context) async {
     Circle processIndicator = Circle();
 
     return showDialog(
@@ -612,14 +611,13 @@ class _ReportingScreenState extends State<ReportingScreen> {
               itemCount: controller.shopNameSet.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  onTap: () async{
+                  onTap: () async {
                     processIndicator.show(context);
                     controller.shopName =
                         controller.shopNameSet.toList()[index];
-                        await controller.shopNameGetOnly(context);
-                 await   controller
+                    // await controller.shopNameGetOnly(context);
+                    await controller
                         .reportingAPI(context)
-
                         .then((value) => setState(() {
                               // processIndicator.hide(context);
                             }));

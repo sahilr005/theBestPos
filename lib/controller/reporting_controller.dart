@@ -46,29 +46,6 @@ class ReportingController extends GetxController {
   List<double> amcl = [];
   double totalAmount = 0.0;
 
-
-  Future<bool> shopNameGetOnly(BuildContext context) async {
-    var date = DateTime.now();
-    var newDate = DateTime(date.year, date.month, date.day);
-    var tdt =
-        "${DateFormat.d().format(newDate)}-${DateFormat.M().format(newDate)}-${DateFormat.y().format(newDate)}";
-    var fdt =
-        "${DateFormat.d().format(newDate)}-${DateFormat.M().format(newDate)}-${DateFormat.y().format(newDate)}";
-    // "${DateFormat.d().format(fromDate)}-${DateFormat.M().format(fromDate)}-${DateFormat.y().format(fromDate)}";
-    var res = await networkRepository.reportingCAll(context, fdt, tdt);
-
-    if (res != null) {
-      shopData = res;
-
-      for (var i = 0; i < shopData.length; i++) {
-        shopNameSet.add(shopData[i]["shopnm"]);
-      }
-      shopName = shopNameSet.toList()[0];
-      update();
-    }
-    return true;
-  }
-
   Future<bool> shopNameGet(BuildContext context) async {
     var date = DateTime.now();
     var newDate = DateTime(date.year, date.month, date.day);
