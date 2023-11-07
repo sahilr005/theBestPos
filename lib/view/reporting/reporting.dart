@@ -235,12 +235,12 @@ class _ReportingScreenState extends State<ReportingScreen> {
                       Text(
                         controller.totalAmount.toPrecision(2).toString(),
                         style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
+                            fontWeight: FontWeight.bold, fontSize: 15),
                       ),
                       Text(
                         controller.orderSet.length.toString(),
                         style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
+                            fontWeight: FontWeight.bold, fontSize: 14),
                       ),
                     ],
                   )),
@@ -413,10 +413,25 @@ class _ReportingScreenState extends State<ReportingScreen> {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            controller.shopName.toString(),
-            style: const TextStyle(color: Colors.black),
-          ),
+          Text(controller.shopName.toString().length == 17
+              ? controller.shopName
+                  .toString()
+                  .replaceAll("taj indian sweets", "Surry Hills")
+              : controller.shopName.toString().length == 30
+                  ? controller.shopName.toString().replaceAll(
+                      "taj indian sweets & restaurant", "Harris Park")
+                  : controller.shopName.toString().length == 25
+                      ? controller.shopName
+                          .toString()
+                          .replaceAll("taj indian sweets pty ltd", "Canberra")
+                      : controller.shopName.toString()),
+          // Text(
+          //   controller.shopName
+          //       .toString()
+          //       .toLowerCase()
+          //       .replaceAll(" &amp; ", " & "),
+          //   style: const TextStyle(color: Colors.black),
+          // ),
           const Icon(Icons.arrow_drop_down)
         ],
       ),
@@ -613,8 +628,10 @@ class _ReportingScreenState extends State<ReportingScreen> {
                 return ListTile(
                   onTap: () async {
                     processIndicator.show(context);
-                    controller.shopName =
-                        controller.shopNameSet.toList()[index];
+                    controller.shopName = controller.shopNameSet
+                        .toList()[index]
+                        .toString()
+                        .replaceAll(" &amp; ", " & ");
                     // await controller.shopNameGetOnly(context);
                     await controller
                         .reportingAPI(context)
@@ -627,7 +644,38 @@ class _ReportingScreenState extends State<ReportingScreen> {
                           controller.shopNameSet.toList()[index]
                       ? const Icon(Icons.check)
                       : null,
-                  title: Text(controller.shopNameSet.toList()[index]),
+                  title: Text(controller.shopNameSet
+                              .toList()[index]
+                              .toString()
+                              .length ==
+                          17
+                      ? controller.shopNameSet
+                          .toList()[index]
+                          .toString()
+                          .replaceAll("taj indian sweets", "Surry Hills")
+                      : controller.shopNameSet
+                                  .toList()[index]
+                                  .toString()
+                                  .length ==
+                              30
+                          ? controller.shopNameSet
+                              .toList()[index]
+                              .toString()
+                              .replaceAll("taj indian sweets & restaurant",
+                                  "Harris Park")
+                          : controller.shopNameSet
+                                      .toList()[index]
+                                      .toString()
+                                      .length ==
+                                  25
+                              ? controller.shopNameSet
+                                  .toList()[index]
+                                  .toString()
+                                  .replaceAll(
+                                      "taj indian sweets pty ltd", "Canberra")
+                              : controller.shopNameSet
+                                  .toList()[index]
+                                  .toString()),
                   dense: true,
                 );
               },

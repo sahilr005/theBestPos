@@ -60,9 +60,16 @@ class ReportingController extends GetxController {
       shopData = res;
 
       for (var i = 0; i < shopData.length; i++) {
-        shopNameSet.add(shopData[i]["shopnm"]);
+        shopNameSet.add(shopData[i]["shopnm"]
+            .toString()
+            .toLowerCase()
+            .replaceAll(" &amp; ", " & "));
       }
-      shopName = shopNameSet.toList()[0];
+      shopName = shopNameSet
+          .toList()[0]
+          .toString()
+          .toLowerCase()
+          .replaceAll(" &amp; ", " & ");
       log("Shop Name $shopName");
       log("Shop Name ${shopNameSet.length}");
 

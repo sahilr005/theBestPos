@@ -48,11 +48,17 @@ class NetworkRepository {
 
   Future orderList(context, fromDate, toDate) async {
     final String? token = box!.get('token');
+    var uri =
+        Uri.https("esofttechnologies.com.au", "/restroapp/order-list-api.php", {
+      "tkn": token,
+      "fdt": fromDate,
+      "tdt": toDate,
+    });
     try {
       final authUserResponse = await NetworkDioHttp.getDioHttpMethod(
         context: context,
-        url:
-            "${ApiAppConstants.apiEndPoint}${ApiAppConstants.orderlist}?tkn=$token&fdt=$fromDate&tdt=$toDate",
+        url: uri.toString(),
+        // "${ApiAppConstants.apiEndPoint}${ApiAppConstants.orderlist}?tkn=$token&fdt=$fromDate&tdt=$toDate",
       );
       debugPrint('\x1b[97m Response : $authUserResponse');
       return await authUserResponse['body'];
@@ -66,11 +72,22 @@ class NetworkRepository {
 
   Future reportingShopCAll(context, fromDate, toDate, shopName) async {
     final String? token = box!.get('token');
+    var uri =
+        Uri.https("esofttechnologies.com.au", "/restroapp/pos-orders-api.php", {
+      "tkn": token,
+      "fdt": fromDate,
+      "tdt": toDate,
+      "shopnm": shopName,
+    });
+    log(uri.toString());
     try {
       final authUserResponse = await NetworkDioHttp.getDioHttpMethod(
         context: context,
-        url:
-            "${ApiAppConstants.apiEndPoint}${ApiAppConstants.posOrder}?tkn=$token&fdt=$fromDate&tdt=$toDate&shopnm=$shopName",
+        url: uri.toString(),
+        // "${ApiAppConstants.apiEndPoint}${ApiAppConstants.posOrder}?tkn=$token&fdt=$fromDate&tdt=$toDate&shopnm=${shopName.toString()}",
+        // "${ApiAppConstants.apiEndPoint}${ApiAppConstants.posOrder}?tkn=$token&fdt=$fromDate&tdt=$toDate&shopnm=Taj Indian Sweets")
+        // .replaceAll('"', ""),
+        // "https://esofttechnologies.com.au/restroapp/pos-orders-api.php?tkn=fcd27a0377626af69b438993b7976e5e&fdt=6-11-2023&tdt=6-11-2023&shopnm=Taj%20Indian%20Sweets%20%26%20Restaurant"
         // "${ApiAppConstants.apiEndPoint}${ApiAppConstants.posOrder}?tkn=$token&fdt=19-03-2022&tdt=19-03-2022&shopnm=$shopName",
       );
       debugPrint('\x1b[97m Response : $authUserResponse');
@@ -85,11 +102,17 @@ class NetworkRepository {
 
   Future reportingCAll(context, fromDate, toDate) async {
     final String? token = box!.get('token');
+    var uri =
+        Uri.https("esofttechnologies.com.au", "/restroapp/pos-orders-api.php", {
+      "tkn": token,
+      "fdt": fromDate,
+      "tdt": toDate,
+    });
     try {
       final authUserResponse = await NetworkDioHttp.getDioHttpMethod(
         context: context,
-        url:
-            "${ApiAppConstants.apiEndPoint}${ApiAppConstants.posOrder}?tkn=$token&fdt=$fromDate&tdt=$toDate",
+        url: uri.toString(),
+        // "${ApiAppConstants.apiEndPoint}${ApiAppConstants.posOrder}?tkn=$token&fdt=$fromDate&tdt=$toDate",
       );
       debugPrint('\x1b[97m Response : $authUserResponse');
       return await authUserResponse['body'];
@@ -103,12 +126,18 @@ class NetworkRepository {
 
   Future categoryApi(context, {catid, off}) async {
     final String? token = box!.get('token');
+    var uri1 = Uri.https(
+        "esofttechnologies.com.au",
+        "/restroapp/category-api.php",
+        {"tkn": token, "catid": catid, "act": "Update", "active": off});
+    var uri2 = Uri.https("esofttechnologies.com.au",
+        "/restroapp/category-api.php", {"tkn": token, "act": "Show"});
     try {
       final authUserResponse = await NetworkDioHttp.getDioHttpMethod(
         context: context,
-        url: catid != null
-            ? "${ApiAppConstants.apiEndPoint}${ApiAppConstants.category}?tkn=$token&catid=$catid=&act=Update&active=$off"
-            : "${ApiAppConstants.apiEndPoint}${ApiAppConstants.category}?tkn=$token&act=Show",
+        url: catid != null ? uri1.toString() : uri2.toString(),
+        // ? "${ApiAppConstants.apiEndPoint}${ApiAppConstants.category}?tkn=$token&catid=$catid=&act=Update&active=$off"
+        // : "${ApiAppConstants.apiEndPoint}${ApiAppConstants.category}?tkn=$token&act=Show",
       );
       debugPrint('\x1b[97m Response : $authUserResponse');
       return await authUserResponse['body'];
@@ -122,12 +151,20 @@ class NetworkRepository {
 
   Future toppingApi(context, {name, off}) async {
     final String? token = box!.get('token');
+    var uri1 = Uri.https(
+        "esofttechnologies.com.au",
+        "/restroapp/topping-api.php",
+        {"tkn": token, "name": name, "act": "Update", "active": off});
+    var uri2 = Uri.https("esofttechnologies.com.au",
+        "/restroapp/topping-api.php", {"tkn": token, "act": "Show"});
     try {
       final authUserResponse = await NetworkDioHttp.getDioHttpMethod(
         context: context,
         url: name != null
-            ? "${ApiAppConstants.apiEndPoint}${ApiAppConstants.topping}?tkn=$token&act=Update&name=$name&active=$off"
-            : "${ApiAppConstants.apiEndPoint}${ApiAppConstants.topping}?tkn=$token&act=Show",
+            ? uri1
+                .toString() // "${ApiAppConstants.apiEndPoint}${ApiAppConstants.topping}?tkn=$token&act=Update&name=$name&active=$off"
+            : uri2
+                .toString(), // "${ApiAppConstants.apiEndPoint}${ApiAppConstants.topping}?tkn=$token&act=Show",
       );
       debugPrint('\x1b[97m Response : $authUserResponse');
       return await authUserResponse['body'];
@@ -141,13 +178,20 @@ class NetworkRepository {
 
   Future itemApi(context, {itemID, status}) async {
     final String? token = box!.get('token');
+    var uri1 = Uri.https("esofttechnologies.com.au", "/restroapp/item-api.php",
+        {"tkn": token, "itemid": itemID, "act": "Update", "active": status});
+    var uri2 = Uri.https("esofttechnologies.com.au", "/restroapp/item-api.php",
+        {"tkn": token, "act": "Show"});
+
     try {
       final authUserResponse = await NetworkDioHttp.getDioHttpMethod(
-        context: context,
-        url: itemID != null
-            ? "${ApiAppConstants.apiEndPoint}${ApiAppConstants.item}?tkn=$token&itemid=$itemID&act=Update&active=$status"
-            : "${ApiAppConstants.apiEndPoint}${ApiAppConstants.item}?tkn=$token&act=Show",
-      );
+          context: context,
+          url: itemID != null
+              ? uri1
+                  .toString() // "${ApiAppConstants.apiEndPoint}${ApiAppConstants.item}?tkn=$token&itemid=$itemID&act=Update&active=$status"
+              : uri2
+                  .toString() // "${ApiAppConstants.apiEndPoint}${ApiAppConstants.item}?tkn=$token&act=Show",
+          );
       debugPrint('\x1b[97m Response : $authUserResponse');
       return await authUserResponse['body'];
     } catch (e) {
@@ -295,15 +339,12 @@ class NetworkRepository {
     }
   }
 
-  Future<DayitemsModel> datWiseItemUpdate({context,itemid,daystr}) async {
+  Future<DayitemsModel> datWiseItemUpdate({context, itemid, daystr}) async {
     Circle processIndicator = Circle();
     final String? token = box!.get('token');
     String url =
         "${ApiAppConstants.apiEndPoint}${ApiAppConstants.daywiseItem}?tkn=$token";
-    Map data = {"tkn": "$token",
-     "itemid": itemid,
-     "daystr":daystr
-    };
+    Map data = {"tkn": "$token", "itemid": itemid, "daystr": daystr};
     log("url --  $url");
     try {
       final authUserResponse = await NetworkDioHttp.postDioHttpMethod(
@@ -325,17 +366,20 @@ class NetworkRepository {
     }
   }
 
-
   Future<EatInItemModel> onOffItems(
       {context, required String itemid, required String eatin}) async {
     Circle processIndicator = Circle();
     final String? token = box!.get('token');
-    String url =
-        "${ApiAppConstants.apiEndPoint}${ApiAppConstants.eatinItems}?tkn=$token&itemid=$itemid&eatin=$eatin";
-    log("url --  $url");
+    var uri1 = Uri.https(
+        "esofttechnologies.com.au",
+        "/restroapp/eatin-items-api.php",
+        {"tkn": token, "itemid": itemid, "eatin": eatin});
+    // String url =
+    // "${ApiAppConstants.apiEndPoint}${ApiAppConstants.eatinItems}?tkn=$token&itemid=$itemid&eatin=$eatin";
+    log("url --  $uri1");
     try {
-      final authUserResponse =
-          await NetworkDioHttp.getDioHttpMethod(context: context, url: url);
+      final authUserResponse = await NetworkDioHttp.getDioHttpMethod(
+          context: context, url: uri1.toString());
       log('\x1b[97m Response : $authUserResponse');
       EatInItemModel eatInItemModel =
           EatInItemModel.fromJson(await authUserResponse['body']);
@@ -353,14 +397,18 @@ class NetworkRepository {
       {context, required toDate, required fromDate}) async {
     Circle processIndicator = Circle();
     final String? token = box!.get('token');
-    String url =
-        "https://seven-hills.websiteorders.com.au/orders-online/holiday-dt-api.php?tkn=536576656e48696c6c735765623f&action=A&fdt=$fromDate&tdt=$toDate";
+    var uri1 = Uri.https(
+        "esofttechnologies.com.au",
+        "/restroapp/holiday-dt-api.php",
+        {"tkn": token, "action": "A", "fdt": fromDate, "tdt": toDate});
+    // String url =
+    //     "https://seven-hills.websiteorders.com.au/orders-online/holiday-dt-api.php?tkn=536576656e48696c6c735765623f&action=A&fdt=$fromDate&tdt=$toDate";
     // "${ApiAppConstants.apiEndPoint}${ApiAppConstants.holiday}";
-    log("url --  $url");
+    log("url --  $uri1");
     try {
       final authUserResponse = await NetworkDioHttp.postDioHttpMethod(
           context: context,
-          url: url,
+          url: uri1.toString(),
           data: {
             "tkn": "$token",
           });
@@ -381,14 +429,22 @@ class NetworkRepository {
       {context, required toDate, required fromDate, required id}) async {
     Circle processIndicator = Circle();
     final String? token = box!.get('token');
-    String url =
-        "https://seven-hills.websiteorders.com.au/orders-online/holiday-dt-api.php?tkn=536576656e48696c6c735765623f&action=E&id=$id&fdt=$fromDate&tdt=$toDate";
+    var uri1 = Uri.https(
+        "esofttechnologies.com.au", "/restroapp/holiday-dt-api.php", {
+      "tkn": token,
+      "action": "E",
+      "id": id,
+      "fdt": fromDate,
+      "tdt": toDate
+    });
+    // String url =
+    //     "https://seven-hills.websiteorders.com.au/orders-online/holiday-dt-api.php?tkn=536576656e48696c6c735765623f&action=E&id=$id&fdt=$fromDate&tdt=$toDate";
     // "${ApiAppConstants.apiEndPoint}${ApiAppConstants.holiday}";
-    log("url --  $url");
+    log("url --  $uri1");
     try {
       final authUserResponse = await NetworkDioHttp.postDioHttpMethod(
           context: context,
-          url: url,
+          url: uri1.toString(),
           data: {
             "tkn": "$token",
           });
@@ -408,13 +464,17 @@ class NetworkRepository {
   Future<HolidayModel> deleteHoliday({context, required id}) async {
     Circle processIndicator = Circle();
     final String? token = box!.get('token');
-    String url =
-        "https://seven-hills.websiteorders.com.au/orders-online/holiday-dt-api.php?tkn=536576656e48696c6c735765623f&action=D&id=$id";
-    log("url --  $url");
+    var uri1 = Uri.https(
+        "esofttechnologies.com.au",
+        "/restroapp/holiday-dt-api.php",
+        {"tkn": token, "action": "D", "id": id});
+    // String url =
+    //     "https://seven-hills.websiteorders.com.au/orders-online/holiday-dt-api.php?tkn=536576656e48696c6c735765623f&action=D&id=$id";
+    log("url --  $uri1");
     try {
       final authUserResponse = await NetworkDioHttp.postDioHttpMethod(
           context: context,
-          url: url,
+          url: uri1.toString(),
           data: {
             "tkn": "$token",
           });
