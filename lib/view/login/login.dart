@@ -11,6 +11,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  bool _isObscure = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,18 +40,30 @@ class _LoginScreenState extends State<LoginScreen> {
                       textInputAction: TextInputAction.next,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        hintText: "Email",
+                        hintText: "UserName",
                       ),
                     ),
                     height(10),
                     TextField(
                       controller: controller.passwordController,
-                      obscureText: true,
+                      obscureText: _isObscure, // Use the _isObscure state
                       keyboardType: TextInputType.visiblePassword,
                       textInputAction: TextInputAction.done,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: "password",
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        hintText: "Password",
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isObscure
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isObscure = !_isObscure; // Toggle visibility
+                            });
+                          },
+                        ),
                       ),
                     ),
                     height(30),
