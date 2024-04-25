@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 // ignore: depend_on_referenced_packages
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:order/config/common.dart';
+import 'package:order/gemini.dart';
 import 'package:order/utils/api_constants.dart';
 import 'package:order/utils/network_dio/network_dio.dart';
 import 'package:order/view/home/home.dart';
@@ -46,7 +47,8 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           primarySwatch: Colors.pink,
           fontFamily: "Cera Pro"),
-      home: UpgradeAlert(
+      home: 
+      UpgradeAlert(
           upgrader: Upgrader(dialogStyle: UpgradeDialogStyle.cupertino),
           child: token != null ? const HomeScreen() : const LoginScreen()),
     );

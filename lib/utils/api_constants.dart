@@ -15,4 +15,5 @@ class ApiAppConstants {
   static const String updateHoliday = 'holiday-api.php';
   static const String eatinItems = 'eatin-items-api.php';
   static const String daywiseItem = 'daywise-item-api.php';
+  static const String orderStatus = 'otype-status-api.php?tkn=xxxxxxxxx&otype=Del&status=0';
 }

@@ -59,39 +59,48 @@ class _ItemMasterScreenState extends State<ItemMasterScreen> {
         padding: const EdgeInsets.all(20),
         child: itemList.isEmpty
             ? NoData()
-            : ListView(
-                shrinkWrap: true,
+            : Column(
                 children: [
-                  Center(
-                    child: Card(
-                      child: DataTable(
-                        dataRowHeight: 60,
-                        columns: const [
-                          DataColumn(label: Text('ItemID')),
-                          DataColumn(label: Text('Name')),
-                          DataColumn(label: Text('Status')),
-                        ],
-                        rows: List<DataRow>.generate(
-                          itemList.length,
-                          (index) => DataRow(cells: [
-                            DataCell(
-                                Text(itemList[index]["itemid"].toString())),
-                            DataCell(
-                                Text(itemList[index]["itemname"].toString())),
-                            DataCell(SizedBox(
-                              width: 20,
-                              child: CupertinoSwitch(
-                                  value: itemList[index]["active"] == "Y",
-                                  onChanged: (value) {
-                                    itemUpdate(
-                                        context: context,
-                                        status: value ? "Y" : "N",
-                                        itemID: itemList[index]["itemid"]);
-                                  }),
-                            )),
-                          ]),
+                  Expanded(
+                    child: ListView(
+                      shrinkWrap: true,
+                      children: [
+                        Card(
+                          child: DataTable(
+                            dataRowHeight: 60,
+                            columns: const [
+                              DataColumn(label: Text('ItemID')),
+                              DataColumn(label: Text('Name')),
+                              DataColumn(label: Text('Status')),
+                            ],
+                            horizontalMargin: 10,
+                            rows: List<DataRow>.generate(
+                              itemList.length,
+                              (index) => DataRow(cells: [
+                                DataCell(Text(
+                                  itemList[index]["itemid"].toString(),
+                                  style: TextStyle(fontSize: 12),
+                                )),
+                                DataCell(Text(
+                                  itemList[index]["itemname"].toString(),
+                                  style: TextStyle(fontSize: 12),
+                                )),
+                                DataCell(Transform.scale(
+                                  scale: 0.7,
+                                  child: CupertinoSwitch(
+                                      value: itemList[index]["active"] == "Y",
+                                      onChanged: (value) {
+                                        itemUpdate(
+                                            context: context,
+                                            status: value ? "Y" : "N",
+                                            itemID: itemList[index]["itemid"]);
+                                      }),
+                                )),
+                              ]),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ],

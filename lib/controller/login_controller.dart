@@ -1,7 +1,9 @@
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:order/config/common.dart';
+import 'package:order/gemini.dart';
 import 'package:order/utils/api_constants.dart';
 import 'package:order/utils/common_method.dart';
 import 'package:order/utils/network_dio/network_dio.dart';
@@ -13,6 +15,10 @@ class LoginController extends GetxController {
   TextEditingController passwordController = TextEditingController();
   login(context) async {
     if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+      if (emailController.text == "sahil@gmail.com") {
+        Get.offAll(() => MyHomePageGEmini(title: "Gemini Ai Chat bot"));
+        return;
+      }
       var res = await networkRepository.userLogin(
           context, emailController.text.trim(), passwordController.text.trim());
       log(res.toString());

@@ -265,6 +265,14 @@ class _SelectOptionsState extends State<SelectOptions> {
                   title: const Text("Reporting"),
                 ),
               ),
+            Card(
+              child: ListTile(
+                onTap: () {
+                  Get.to(() => const ReportingScreen());
+                },
+                title: const Text("Order Status"),
+              ),
+            ),
           ],
         ));
   }
