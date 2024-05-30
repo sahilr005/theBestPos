@@ -15,10 +15,10 @@ class LoginController extends GetxController {
   TextEditingController passwordController = TextEditingController();
   login(context) async {
     if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
-      if (emailController.text == "sahil@gmail.com") {
-        Get.offAll(() => MyHomePageGEmini(title: "Gemini Ai Chat bot"));
-        return;
-      }
+      // if (emailController.text == "sahil@gmail.com") {
+      //   Get.offAll(() => MyHomePageGEmini(title: "Gemini Ai Chat bot"));
+      //   return;
+      // }
       var res = await networkRepository.userLogin(
           context, emailController.text.trim(), passwordController.text.trim());
       log(res.toString());

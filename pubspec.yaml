@@ -35,7 +35,7 @@ dependencies:
   firebase_core: ^2.20.0
   package_info_plus: ^4.2.0
   cloud_firestore: ^4.11.0
-  flutter_gemini_bot: ^0.0.4
+
 
 dev_dependencies:
   flutter_test:
