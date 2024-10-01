@@ -124,6 +124,44 @@ class NetworkRepository {
     }
   }
 
+  Future deliveryTypeChangeApi(context, {required id, required cstatus}) async {
+    final String? token = box!.get('token');
+    var uri1 = Uri.https(
+        "esofttechnologies.com.au",
+        "/restroapp/delivery-type-api.php",
+        {"tkn": token, "id": id, "cstatus": cstatus});
+    try {
+      final authUserResponse = await NetworkDioHttp.getDioHttpMethod(
+        context: context,
+        url: uri1.toString(),
+      );
+      debugPrint('\x1b[97m Response : $authUserResponse');
+      return await authUserResponse['body'];
+    } catch (e) {
+      CommonMethod().getXSnackBar(
+          "Your Token Is Expire", "Please login again", Colors.red);
+      Get.off(() => LoginScreen());
+      return e.toString();
+    }
+  }
+
+  Future deliveryApi(context) async {
+    final String? token = box!.get('token');
+    var uri1 = Uri.https("esofttechnologies.com.au",
+        "/restroapp/delivery-type-list-api.php", {"tkn": token});
+    try {
+      final authUserResponse = await NetworkDioHttp.getDioHttpMethod(
+          context: context, url: uri1.toString());
+      debugPrint('\x1b[97m Response : $authUserResponse');
+      return await authUserResponse['body'];
+    } catch (e) {
+      CommonMethod().getXSnackBar(
+          "Your Token Is Expire", "Please login again", Colors.red);
+      Get.off(() => LoginScreen());
+      return e.toString();
+    }
+  }
+
   Future categoryApi(context, {catid, off}) async {
     final String? token = box!.get('token');
     var uri1 = Uri.https(

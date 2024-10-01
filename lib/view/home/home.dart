@@ -11,6 +11,7 @@ import 'package:order/view/category/category_master.dart';
 import 'package:order/view/daywise/daywise.dart';
 import 'package:order/view/eatin/eatin_master.dart';
 import 'package:order/view/holiday/holiday.dart';
+import 'package:order/view/home/delivery/deliveryStatus.dart';
 import 'package:order/view/item/itemmaster.dart';
 import 'package:order/view/login/login.dart';
 import 'package:order/view/order/orderlist.dart';
@@ -265,12 +266,20 @@ class _SelectOptionsState extends State<SelectOptions> {
                   title: const Text("Reporting"),
                 ),
               ),
+            // Card(
+            //   child: ListTile(
+            //     onTap: () {
+            //       Get.to(() => const ReportingScreen());
+            //     },
+            //     title: const Text("Order Status"),
+            //   ),
+            // ),
             Card(
               child: ListTile(
                 onTap: () {
-                  Get.to(() => const ReportingScreen());
+                  Get.to(() => const DeliveryMasterScreen());
                 },
-                title: const Text("Order Status"),
+                title: const Text("Delivery Status"),
               ),
             ),
           ],
