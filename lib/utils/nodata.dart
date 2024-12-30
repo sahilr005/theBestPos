@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
+// import 'package:lottie/lottie.dart';
 
 // ignore: must_be_immutable
 class NoData extends StatelessWidget {
@@ -19,7 +19,7 @@ class NoData extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Lottie.asset('assets/json/nodata.json', height: 200),
+          // Lottie.asset('assets/json/nodata.json', height: 200),
           Text(
             'No Data Found'.toString(),
             style: const TextStyle(fontSize: 16),

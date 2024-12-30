@@ -6,7 +6,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:connectivity/connectivity.dart';
+// import 'package:connectivity/connectivity.dart';
 import 'package:order/config/common.dart';
 import 'package:order/utils/repository/network_repository.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
@@ -177,13 +177,13 @@ class NetworkDioHttp {
   }
 
   static Future<bool> check() async {
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.mobile) {
+    // var connectivityResult = await (Connectivity().checkConnectivity());
+    // if (connectivityResult == ConnectivityResult.mobile) {
+    //   return true;
+    // } else if (connectivityResult == ConnectivityResult.wifi) {
       return true;
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      return true;
-    }
-    return false;
+    // }
+    // return false;
   }
 
   //Post Method
@@ -498,13 +498,13 @@ class NetworkDioHttp {
 
 class NetworkCheck {
   Future<bool> check() async {
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.mobile) {
+    // var connectivityResult = await (Connectivity().checkConnectivity());
+    // if (connectivityResult == ConnectivityResult.mobile) {
+    //   return true;
+    // } else if (connectivityResult == ConnectivityResult.wifi) {
       return true;
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      return true;
-    }
-    return false;
+    // }
+    // return false;
   }
 
   dynamic checkInternet(bool func) {

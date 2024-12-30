@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
           fontFamily: "Cera Pro"),
       home: 
       UpgradeAlert(
-          upgrader: Upgrader(dialogStyle: UpgradeDialogStyle.cupertino),
+          upgrader: Upgrader(),
           child: token != null ? const HomeScreen() : const LoginScreen()),
     );
   }

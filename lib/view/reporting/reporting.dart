@@ -6,7 +6,7 @@ import 'package:order/config/common.dart';
 import 'package:order/controller/reporting_controller.dart';
 import 'package:order/utils/nodata.dart';
 import 'package:order/utils/process_indicator.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
+// import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ReportingScreen extends StatefulWidget {
   const ReportingScreen({super.key});
@@ -148,9 +148,9 @@ class _ReportingScreenState extends State<ReportingScreen> {
                     height(10),
                     if (controller.reportingData.isEmpty) NoData(),
                     if (controller.sortValue != 2) analysisItem(),
-                    if (controller.reportingData.isNotEmpty &&
-                        controller.sortValue != 2)
-                      chartShow(),
+                    // if (controller.reportingData.isNotEmpty &&
+                    //     controller.sortValue != 2)
+                    //   chartShow(),
                   ],
                 ),
               ),
@@ -269,62 +269,62 @@ class _ReportingScreenState extends State<ReportingScreen> {
     );
   }
 
-  SfCircularChart chartShow() {
-    return SfCircularChart(
-      series: <CircularSeries>[
-        // Render pie chart
-        PieSeries<dynamic, String>(
-          dataSource: List.generate(controller.categorySet.length, (ind) {
-            int res = 0;
-            List amcl = [];
-            double sum = 0.0;
-            if (controller.sortValue == 0) {
-              res = controller.categoryList
-                  .map((element) =>
-                      element == controller.categorySet.toList()[ind] ? 1 : 0)
-                  .reduce((value, element) => value + element);
-              amcl = controller
-                  .calMap[controller.categorySet.toList()[ind].toString()]
-                  .toString()
-                  .split(",");
-              sum = amcl.fold<double>(0,
-                  (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
-            } else {
-              res = controller.itemList
-                  .map((element) =>
-                      element == controller.itemSet.toList()[ind] ? 1 : 0)
-                  .reduce((value, element) => value + element);
+  // SfCircularChart chartShow() {
+  //   return SfCircularChart(
+  //     series: <CircularSeries>[
+  //       // Render pie chart
+  //       PieSeries<dynamic, String>(
+  //         dataSource: List.generate(controller.categorySet.length, (ind) {
+  //           int res = 0;
+  //           List amcl = [];
+  //           double sum = 0.0;
+  //           if (controller.sortValue == 0) {
+  //             res = controller.categoryList
+  //                 .map((element) =>
+  //                     element == controller.categorySet.toList()[ind] ? 1 : 0)
+  //                 .reduce((value, element) => value + element);
+  //             amcl = controller
+  //                 .calMap[controller.categorySet.toList()[ind].toString()]
+  //                 .toString()
+  //                 .split(",");
+  //             sum = amcl.fold<double>(0,
+  //                 (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
+  //           } else {
+  //             res = controller.itemList
+  //                 .map((element) =>
+  //                     element == controller.itemSet.toList()[ind] ? 1 : 0)
+  //                 .reduce((value, element) => value + element);
 
-              amcl = controller
-                  .itemMapCal[controller.itemSet.toList()[ind].toString()]
-                  .toString()
-                  .split(",");
-              sum = amcl.fold<double>(0,
-                  (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
-            }
-            return {
-              "x": controller.itemSet.toList()[ind].toString(),
-              "y": controller.sortValue == 0
-                  ? ((res / controller.categoryList.length) * 100).round()
-                  : ((res / controller.itemList.length) * 100).round(),
-              "color": Colors.green
-            };
-          }),
-          xValueMapper: (data, _) => data["x"],
-          yValueMapper: (data, _) => data["y"],
-          dataLabelSettings: DataLabelSettings(
-            isVisible: true,
-            builder: (data, point, series, pointIndex, seriesIndex) {
-              return Text(
-                "${data["x"]} ${data["y"]}%",
-                style: const TextStyle(fontSize: 12),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
+  //             amcl = controller
+  //                 .itemMapCal[controller.itemSet.toList()[ind].toString()]
+  //                 .toString()
+  //                 .split(",");
+  //             sum = amcl.fold<double>(0,
+  //                 (prev, value) => prev + (double.tryParse(value ?? '0') ?? 0));
+  //           }
+  //           return {
+  //             "x": controller.itemSet.toList()[ind].toString(),
+  //             "y": controller.sortValue == 0
+  //                 ? ((res / controller.categoryList.length) * 100).round()
+  //                 : ((res / controller.itemList.length) * 100).round(),
+  //             "color": Colors.green
+  //           };
+  //         }),
+  //         xValueMapper: (data, _) => data["x"],
+  //         yValueMapper: (data, _) => data["y"],
+  //         dataLabelSettings: DataLabelSettings(
+  //           isVisible: true,
+  //           builder: (data, point, series, pointIndex, seriesIndex) {
+  //             return Text(
+  //               "${data["x"]} ${data["y"]}%",
+  //               style: const TextStyle(fontSize: 12),
+  //             );
+  //           },
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget allPaymentList(List<Order> orders) {
     // Group orders by otime
@@ -395,7 +395,8 @@ class _ReportingScreenState extends State<ReportingScreen> {
             children: groupedOrdersByTime[order.otime]!.map((order) {
               return ListTile(
                 title: Text('${order.itemnm}'),
-                trailing: Text('\$${order.itmprice.toStringAsFixed(2)}'),
+                trailing: Text(
+                    '\$${(order.itmprice * order.qty).toStringAsFixed(2)}'),
               );
             }).toList(),
           ),
