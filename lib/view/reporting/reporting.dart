@@ -391,12 +391,19 @@ class _ReportingScreenState extends State<ReportingScreen> {
                 Text('\$${order.totamt}'),
               ],
             ),
-            subtitle: Text('${order.otime}'),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('${order.odate}'),
+                Text('${order.otime}'),
+              ],
+            ),
             children: groupedOrdersByTime[order.otime]!.map((order) {
               return ListTile(
                 title: Text('${order.itemnm}'),
-                trailing: Text(
-                    '\$${(order.itmprice * order.qty).toStringAsFixed(2)}'),
+                trailing: Text(order.qty.isGreaterThan(1)
+                    ? '\$${(order.itmprice)} X ${order.qty}= \$${(order.itmprice) * order.qty}'
+                    : "\$${order.itmprice}"),
               );
             }).toList(),
           ),
