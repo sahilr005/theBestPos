@@ -165,7 +165,7 @@ class ReportingController extends GetxController {
         num casho = cash.fold(0, (p, c) => p + (num.tryParse(c ?? '0') ?? 0));
         log(cash.toString());
         for (var i = 0; i < cash.length; i++) {
-          if (!cash[i].contains("0.00")) {
+          if (num.parse(cash[i]).toInt() != 0) {
             cashCount.add(1);
           }
         }
