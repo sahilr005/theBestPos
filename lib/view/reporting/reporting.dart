@@ -180,6 +180,12 @@ class _ReportingScreenState extends State<ReportingScreen> {
                           Text('Eftpos', style: TextStyle(fontSize: 16.0))
                         ]),
                         Column(children: const [
+                          Text('Pay\nLater', style: TextStyle(fontSize: 16.0))
+                        ]),
+                        Column(children: const [
+                          Text('Hold', style: TextStyle(fontSize: 16.0))
+                        ]),
+                        Column(children: const [
                           Text('Total', style: TextStyle(fontSize: 16.0))
                         ]),
                       ]),
@@ -187,9 +193,20 @@ class _ReportingScreenState extends State<ReportingScreen> {
                         Column(children: [
                           Text(controller.cashCount.length.toString())
                         ]),
+                        Column(children: [Text("${controller.eftOrder}")]),
                         Column(children: [
-                          Text(
-                              "${controller.orderSet.length - controller.cashCount.length}")
+                          Text(controller.payLaterOrder
+                              .map((a) => a.customer_order_no)
+                              .toSet()
+                              .length
+                              .toString())
+                        ]),
+                        Column(children: [
+                          Text(controller.holdOrder
+                              .map((a) => a.customer_order_no)
+                              .toSet()
+                              .length
+                              .toString())
                         ]),
                         Column(children: [
                           Text(controller.orderSet.length.toString())
@@ -210,6 +227,43 @@ class _ReportingScreenState extends State<ReportingScreen> {
                                 .toString())
                           ],
                         ),
+                        Column(children: [
+                          Text(controller.payLaterOrder
+                              .where((a) => a.totamt != 0)
+                              .fold<Map<String, num>>(
+                                {},
+                                (acc, c) {
+                                  if (!acc.containsKey(c.customer_order_no)) {
+                                    acc[c.customer_order_no] =
+                                        num.tryParse(c.totamt.toString()) ?? 0;
+                                  }
+                                  return acc;
+                                },
+                              )
+                              .values
+                              .fold(0, (p, c) => p + c.toInt())
+                              .toString())
+                        ]),
+                        Column(children: [
+                          Text(
+                            controller.holdOrder
+                                .where((a) => a.totamt != 0)
+                                .fold<Map<String, num>>(
+                                  {},
+                                  (acc, c) {
+                                    if (!acc.containsKey(c.customer_order_no)) {
+                                      acc[c.customer_order_no] =
+                                          num.tryParse(c.totamt.toString()) ??
+                                              0;
+                                    }
+                                    return acc;
+                                  },
+                                )
+                                .values
+                                .fold(0, (p, c) => p + c.toInt())
+                                .toString(),
+                          )
+                        ]),
                         Column(
                           children: [
                             Text(controller.totalAmount
@@ -327,13 +381,12 @@ class _ReportingScreenState extends State<ReportingScreen> {
   // }
 
   Widget allPaymentList(List<Order> orders) {
-    // Group orders by otime
     Map<String, List<Order>> groupedOrdersByTime = {};
     orders.forEach((order) {
-      if (!groupedOrdersByTime.containsKey(order.otime)) {
-        groupedOrdersByTime[order.otime] = [];
+      if (!groupedOrdersByTime.containsKey(order.ordno)) {
+        groupedOrdersByTime[order.ordno] = [];
       }
-      groupedOrdersByTime[order.otime]!.add(order);
+      groupedOrdersByTime[order.ordno]!.add(order);
     });
     Set<String> uniqueOrdnoSet = {};
     num co = 0;
@@ -394,11 +447,21 @@ class _ReportingScreenState extends State<ReportingScreen> {
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('${order.odate}'),
+                Text(
+                    'Order: ${order.customer_order_no.isEmpty ? order.ordno : order.customer_order_no}'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('${order.odate}'),
+                    if (order.order_status.isNotEmpty &&
+                        order.order_status != "Done")
+                      Text('${order.order_status}'),
+                  ],
+                ),
                 Text('${order.otime}'),
               ],
             ),
-            children: groupedOrdersByTime[order.otime]!.map((order) {
+            children: groupedOrdersByTime[order.ordno]!.map((order) {
               return ListTile(
                 title: Text('${order.itemnm}'),
                 trailing: Text(order.qty.isGreaterThan(1)
@@ -563,59 +626,59 @@ class _ReportingScreenState extends State<ReportingScreen> {
     );
   }
 
-  Future<dynamic> paymentDialog(
-      ReportingController controller, BuildContext context) {
-    Circle processIndicator = Circle();
+  // Future<dynamic> paymentDialog(
+  //     ReportingController controller, BuildContext context) {
+  //   Circle processIndicator = Circle();
 
-    return showDialog(
-      context: context,
-      builder: (context) => CupertinoAlertDialog(
-        title: const Text("Payment Mode"),
-        content: Material(
-            color: Colors.transparent,
-            child: Column(
-              children: [
-                ListTile(
-                  onTap: () {
-                    controller.paymentMode = 0;
-                    setState(() {});
-                    Get.back();
-                  },
-                  dense: true,
-                  title: const Text("All"),
-                  trailing: controller.paymentMode == 0
-                      ? const Icon(Icons.check)
-                      : null,
-                ),
-                ListTile(
-                  onTap: () {
-                    controller.paymentMode = 1;
-                    setState(() {});
-                    Get.back();
-                  },
-                  dense: true,
-                  title: const Text("Cash"),
-                  trailing: controller.paymentMode == 1
-                      ? const Icon(Icons.check)
-                      : null,
-                ),
-                ListTile(
-                  onTap: () {
-                    controller.paymentMode = 2;
-                    setState(() {});
-                    Get.back();
-                  },
-                  dense: true,
-                  title: const Text("Eftpos"),
-                  trailing: controller.paymentMode == 2
-                      ? const Icon(Icons.check)
-                      : null,
-                ),
-              ],
-            )),
-      ),
-    );
-  }
+  //   return showDialog(
+  //     context: context,
+  //     builder: (context) => CupertinoAlertDialog(
+  //       title: const Text("Payment Mode"),
+  //       content: Material(
+  //           color: Colors.transparent,
+  //           child: Column(
+  //             children: [
+  //               ListTile(
+  //                 onTap: () {
+  //                   controller.paymentMode = 0;
+  //                   setState(() {});
+  //                   Get.back();
+  //                 },
+  //                 dense: true,
+  //                 title: const Text("All"),
+  //                 trailing: controller.paymentMode == 0
+  //                     ? const Icon(Icons.check)
+  //                     : null,
+  //               ),
+  //               ListTile(
+  //                 onTap: () {
+  //                   controller.paymentMode = 1;
+  //                   setState(() {});
+  //                   Get.back();
+  //                 },
+  //                 dense: true,
+  //                 title: const Text("Cash"),
+  //                 trailing: controller.paymentMode == 1
+  //                     ? const Icon(Icons.check)
+  //                     : null,
+  //               ),
+  //               ListTile(
+  //                 onTap: () {
+  //                   controller.paymentMode = 2;
+  //                   setState(() {});
+  //                   Get.back();
+  //                 },
+  //                 dense: true,
+  //                 title: const Text("Eftpos"),
+  //                 trailing: controller.paymentMode == 2
+  //                     ? const Icon(Icons.check)
+  //                     : null,
+  //               ),
+  //             ],
+  //           )),
+  //     ),
+  //   );
+  // }
 
   Future<dynamic> shopNameDialog(
       ReportingController controller, BuildContext context) async {
@@ -644,7 +707,7 @@ class _ReportingScreenState extends State<ReportingScreen> {
                     await controller
                         .reportingAPI(context)
                         .then((value) => setState(() {
-                              // processIndicator.hide(context);
+                              processIndicator.hide(context);
                             }));
                     Get.back();
                   },
@@ -783,6 +846,9 @@ class Order {
   final String categ;
   final int status;
   final String daid;
+  final String order_status;
+  final String cancel_reason;
+  final String customer_order_no;
 
   Order({
     required this.posid,
@@ -813,6 +879,9 @@ class Order {
     required this.categ,
     required this.status,
     required this.daid,
+    required this.order_status,
+    required this.cancel_reason,
+    required this.customer_order_no,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
@@ -845,6 +914,9 @@ class Order {
       categ: json['categ'],
       status: int.parse(json['status']),
       daid: json['daid'],
+      order_status: json['order_status'],
+      cancel_reason: json['cancel_reason'],
+      customer_order_no: json['customer_order_no'],
     );
   }
 }

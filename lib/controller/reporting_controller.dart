@@ -29,6 +29,7 @@ class ReportingController extends GetxController {
   List orderList = [];
   List orderAmount = [];
   List orderStatus = [];
+  List newOrderStatus = [];
   List orderItem = [];
   List orderTime = [];
 
@@ -37,11 +38,13 @@ class ReportingController extends GetxController {
   Map itemsMap = {};
   Map itemsTime = {};
   List cashCount = [];
+  num eftOrder = 0;
+  List<Order> holdOrder = [];
+  List<Order> payLaterOrder = [];
   double cashPayment = 0;
   double eftPayment = 0;
-
-  List eftpoList = [];
-  Set eftpoSet = {};
+  double holdPayment = 0;
+  double payLaterPayment = 0;
 
   List<double> amcl = [];
   double totalAmount = 0.0;
@@ -80,7 +83,7 @@ class ReportingController extends GetxController {
     return true;
   }
 
-  Future<bool> reportingAPI(BuildContext context, {shop}) async {
+  Future<bool> reportingAPI(BuildContext context) async {
     DateTime td = toDate;
 
     var tdt =
@@ -100,8 +103,8 @@ class ReportingController extends GetxController {
     orderList = [];
     orderAmount = [];
     orderStatus = [];
+    newOrderStatus = [];
     orderItem = [];
-    eftpoList = [];
     orderTime = [];
     calMap = {};
 
@@ -110,8 +113,13 @@ class ReportingController extends GetxController {
     itemsMap = {};
     itemsTime = {};
     cashCount = [];
+    eftOrder = 0;
+    holdOrder = [];
+    payLaterOrder = [];
     cashPayment = 0;
     eftPayment = 0;
+    holdPayment = 0;
+    payLaterPayment = 0;
 
     List totAm = [];
     List eftpos = [];
@@ -144,6 +152,7 @@ class ReportingController extends GetxController {
           orderAmount.add(reportingData[i]["totamt"]);
           orderList.add(reportingData[i]["ordno"]);
           orderStatus.add(reportingData[i]["status"]);
+          newOrderStatus.add(reportingData[i]["order_status"]);
           orderItem.add(reportingData[i]["itemnm"]);
           orderTime.add(reportingData[i]["otime"]);
           orderSet.add(reportingData[i]["ordno"]);
@@ -163,7 +172,17 @@ class ReportingController extends GetxController {
         num totamt0 =
             totAm.fold(0, (p, c) => p + (num.tryParse(c ?? '0') ?? 0));
         num casho = cash.fold(0, (p, c) => p + (num.tryParse(c ?? '0') ?? 0));
-        log(cash.toString());
+        payLaterOrder = reportingDataModel.value
+            .where((a) => a.order_status == "Pay Later")
+            .toList();
+        holdOrder = reportingDataModel.value
+            .where((a) => a.order_status == "Hold")
+            .toList();
+        eftOrder = reportingDataModel.value
+            .where((a) => a.eftpos != 0) // Filter orders with non-zero eftpos
+            .map((a) => a.customer_order_no) // Extract customer_order_no
+            .toSet() // Keep only unique order numbers
+            .length;
         for (var i = 0; i < cash.length; i++) {
           if (num.parse(cash[i]).toInt() != 0) {
             cashCount.add(1);
@@ -196,8 +215,8 @@ class ReportingController extends GetxController {
         calMap.addAll({categoryList[i]: categoryAmount[i]});
       }
     }
-    // totalAmount = amcl.fold<double>(
-    //     0, (prev, value) => prev + (double.parse(value.toString())));
+    totalAmount = amcl.fold<double>(
+        0, (prev, value) => prev + (double.parse(value.toString())));
 
     return calMap;
   }
