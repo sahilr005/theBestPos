@@ -38,9 +38,12 @@ class ReportingController extends GetxController {
   Map itemsMap = {};
   Map itemsTime = {};
   List cashCount = [];
+  List eftCount = [];
   num eftOrder = 0;
   List<Order> holdOrder = [];
   List<Order> payLaterOrder = [];
+  List<Order> cancelledOrder = [];
+  List<Order> cancelledNKOrder = [];
   double cashPayment = 0;
   double eftPayment = 0;
   double holdPayment = 0;
@@ -113,9 +116,12 @@ class ReportingController extends GetxController {
     itemsMap = {};
     itemsTime = {};
     cashCount = [];
+    eftCount = [];
     eftOrder = 0;
     holdOrder = [];
     payLaterOrder = [];
+    cancelledOrder = [];
+    cancelledNKOrder = [];
     cashPayment = 0;
     eftPayment = 0;
     holdPayment = 0;
@@ -175,6 +181,12 @@ class ReportingController extends GetxController {
         payLaterOrder = reportingDataModel.value
             .where((a) => a.order_status == "Pay Later")
             .toList();
+        cancelledOrder = reportingDataModel.value
+            .where((a) => a.order_status == "Cancelled")
+            .toList();
+        cancelledNKOrder = reportingDataModel.value
+            .where((a) => a.order_status == "Cancelled NK")
+            .toList();
         holdOrder = reportingDataModel.value
             .where((a) => a.order_status == "Hold")
             .toList();
@@ -188,6 +200,12 @@ class ReportingController extends GetxController {
             cashCount.add(1);
           }
         }
+        for (var i = 0; i < eftpos.length; i++) {
+          if (num.parse(eftpos[i]).toInt() != 0) {
+            eftCount.add(1);
+          }
+        }
+        
         update();
       }
       update();

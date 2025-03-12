@@ -173,19 +173,30 @@ class _ReportingScreenState extends State<ReportingScreen> {
                         width: 0.5),
                     children: [
                       TableRow(children: [
-                        Column(children: const [
+                        const Column(children: [
                           Text('Cash', style: TextStyle(fontSize: 16.0))
                         ]),
-                        Column(children: const [
+                        const Column(children: [
                           Text('Eftpos', style: TextStyle(fontSize: 16.0))
                         ]),
-                        Column(children: const [
-                          Text('Pay\nLater', style: TextStyle(fontSize: 16.0))
-                        ]),
-                        Column(children: const [
-                          Text('Hold', style: TextStyle(fontSize: 16.0))
-                        ]),
-                        Column(children: const [
+                        if (controller.payLaterOrder.isNotEmpty)
+                          const Column(children: [
+                            Text('Pay\nLater', style: TextStyle(fontSize: 16.0))
+                          ]),
+                        if (controller.holdOrder.isNotEmpty)
+                          const Column(children: [
+                            Text('Hold', style: TextStyle(fontSize: 16.0))
+                          ]),
+                        if (controller.cancelledOrder.isNotEmpty)
+                          const Column(children: [
+                            Text('Cancelled', style: TextStyle(fontSize: 16.0))
+                          ]),
+                        if (controller.cancelledNKOrder.isNotEmpty)
+                          const Column(children: [
+                            Text('Cancelled NK',
+                                style: TextStyle(fontSize: 16.0))
+                          ]),
+                        const Column(children: [
                           Text('Total', style: TextStyle(fontSize: 16.0))
                         ]),
                       ]),
@@ -193,21 +204,39 @@ class _ReportingScreenState extends State<ReportingScreen> {
                         Column(children: [
                           Text(controller.cashCount.length.toString())
                         ]),
-                        Column(children: [Text("${controller.eftOrder}")]),
-                        Column(children: [
-                          Text(controller.payLaterOrder
-                              .map((a) => a.customer_order_no)
-                              .toSet()
-                              .length
-                              .toString())
-                        ]),
-                        Column(children: [
-                          Text(controller.holdOrder
-                              .map((a) => a.customer_order_no)
-                              .toSet()
-                              .length
-                              .toString())
-                        ]),
+                        Column(children: [Text("${controller.eftCount.length}")]),
+                        if (controller.payLaterOrder.isNotEmpty)
+                          Column(children: [
+                            Text(controller.payLaterOrder
+                                .map((a) => a.customer_order_no)
+                                .toSet()
+                                .length
+                                .toString())
+                          ]),
+                        if (controller.holdOrder.isNotEmpty)
+                          Column(children: [
+                            Text(controller.holdOrder
+                                .map((a) => a.customer_order_no)
+                                .toSet()
+                                .length
+                                .toString())
+                          ]),
+                        if (controller.cancelledOrder.isNotEmpty)
+                          Column(children: [
+                            Text(controller.cancelledOrder
+                                .map((a) => a.customer_order_no)
+                                .toSet()
+                                .length
+                                .toString())
+                          ]),
+                        if (controller.cancelledNKOrder.isNotEmpty)
+                          Column(children: [
+                            Text(controller.cancelledNKOrder
+                                .map((a) => a.customer_order_no)
+                                .toSet()
+                                .length
+                                .toString())
+                          ]),
                         Column(children: [
                           Text(controller.orderSet.length.toString())
                         ]),
@@ -227,27 +256,12 @@ class _ReportingScreenState extends State<ReportingScreen> {
                                 .toString())
                           ],
                         ),
-                        Column(children: [
-                          Text(controller.payLaterOrder
-                              .where((a) => a.totamt != 0)
-                              .fold<Map<String, num>>(
-                                {},
-                                (acc, c) {
-                                  if (!acc.containsKey(c.customer_order_no)) {
-                                    acc[c.customer_order_no] =
-                                        num.tryParse(c.totamt.toString()) ?? 0;
-                                  }
-                                  return acc;
-                                },
-                              )
-                              .values
-                              .fold(0, (p, c) => p + c.toInt())
-                              .toString())
-                        ]),
-                        Column(children: [
-                          Text(
-                            controller.holdOrder
-                                .where((a) => a.totamt != 0)
+                        if (controller.payLaterOrder.isNotEmpty)
+                          Column(children: [
+                            Text(controller.payLaterOrder
+                                .where((a) =>
+                                    a.totamt !=
+                                    0) // Filter entries with non-zero totamt
                                 .fold<Map<String, num>>(
                                   {},
                                   (acc, c) {
@@ -261,9 +275,86 @@ class _ReportingScreenState extends State<ReportingScreen> {
                                 )
                                 .values
                                 .fold(0, (p, c) => p + c.toInt())
-                                .toString(),
-                          )
-                        ]),
+                                .toString())
+                          ]),
+                        if (controller.holdOrder.isNotEmpty)
+                          Column(children: [
+                            Text(
+                              controller.holdOrder
+                                  .where((a) => a.totamt != 0)
+                                  .fold<Map<String, num>>(
+                                    {},
+                                    (acc, c) {
+                                      if (!acc
+                                          .containsKey(c.customer_order_no)) {
+                                        acc[c.customer_order_no] =
+                                            num.tryParse(c.totamt.toString()) ??
+                                                0;
+                                      }
+                                      return acc;
+                                    },
+                                  )
+                                  .values
+                                  .fold(
+                                      0,
+                                      (p, c) =>
+                                          p +
+                                          c.toInt()) // Safely sum the values with a starting value
+                                  .toString(),
+                            )
+                          ]),
+                        if (controller.cancelledOrder.isNotEmpty)
+                          Column(children: [
+                            Text(
+                              controller.cancelledOrder
+                                  .where((a) => a.totamt != 0)
+                                  .fold<Map<String, num>>(
+                                    {},
+                                    (acc, c) {
+                                      if (!acc
+                                          .containsKey(c.customer_order_no)) {
+                                        acc[c.customer_order_no] =
+                                            num.tryParse(c.totamt.toString()) ??
+                                                0;
+                                      }
+                                      return acc;
+                                    },
+                                  )
+                                  .values
+                                  .fold(
+                                      0,
+                                      (p, c) =>
+                                          p +
+                                          c.toInt()) // Safely sum the values with a starting value
+                                  .toString(),
+                            )
+                          ]),
+                        if (controller.cancelledNKOrder.isNotEmpty)
+                          Column(children: [
+                            Text(
+                              controller.cancelledNKOrder
+                                  .where((a) => a.totamt != 0)
+                                  .fold<Map<String, num>>(
+                                    {},
+                                    (acc, c) {
+                                      if (!acc
+                                          .containsKey(c.customer_order_no)) {
+                                        acc[c.customer_order_no] =
+                                            num.tryParse(c.totamt.toString()) ??
+                                                0;
+                                      }
+                                      return acc;
+                                    },
+                                  )
+                                  .values
+                                  .fold(
+                                      0,
+                                      (p, c) =>
+                                          p +
+                                          c.toInt()) // Safely sum the values with a starting value
+                                  .toString(),
+                            )
+                          ]),
                         Column(
                           children: [
                             Text(controller.totalAmount
@@ -281,7 +372,7 @@ class _ReportingScreenState extends State<ReportingScreen> {
               ListTile(
                   dense: true,
                   title: const Text("Total Sales : "),
-                  subtitle: Text("Qty : "),
+                  subtitle: const Text("Qty : "),
                   trailing: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -382,30 +473,28 @@ class _ReportingScreenState extends State<ReportingScreen> {
 
   Widget allPaymentList(List<Order> orders) {
     Map<String, List<Order>> groupedOrdersByTime = {};
-    orders.forEach((order) {
+    for (var order in orders) {
       if (!groupedOrdersByTime.containsKey(order.ordno)) {
         groupedOrdersByTime[order.ordno] = [];
       }
       groupedOrdersByTime[order.ordno]!.add(order);
-    });
+    }
     Set<String> uniqueOrdnoSet = {};
     num co = 0;
     num webAmount = 0;
     return ListView.builder(
       itemCount: orders.length + 1,
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
         if (index == orders.length) {
           return Card(
             color: Colors.green.shade50,
             child: ListTile(
-              title: Text("Total Uber Eats(Eftpos)"),
-              subtitle: Text("Total Amount "),
+              title: const Text("Total Uber Eats(Eftpos)"),
+              subtitle: const Text("Total Amount "),
               trailing: Text(
-                "$co"
-                        "\n\$" +
-                    webAmount.toStringAsFixed(2),
+                "$co\n\$${webAmount.toStringAsFixed(2)}",
               ),
             ),
           );
@@ -420,12 +509,16 @@ class _ReportingScreenState extends State<ReportingScreen> {
               order.eftpos > 0.00 ? 'Uber Eats(Eftpos)' : 'Uber Eats(cash)';
         } else {
           // For other payments, use the existing logic
-          paymentMethod = order.cash > 0.00 ? 'Cash' : 'Eftpos';
+          paymentMethod = order.cash > 0.00
+              ? 'Cash'
+              : order.eftpos > 0.00
+                  ? 'Eftpos'
+                  : order.order_status;
         }
 
         // Check if ordno has already been added
         if (uniqueOrdnoSet.contains(order.ordno)) {
-          return SizedBox.shrink();
+          return const SizedBox.shrink();
         } else {
           uniqueOrdnoSet.add(order.ordno);
         }
@@ -452,18 +545,18 @@ class _ReportingScreenState extends State<ReportingScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('${order.odate}'),
+                    Text(order.odate),
                     if (order.order_status.isNotEmpty &&
                         order.order_status != "Done")
-                      Text('${order.order_status}'),
+                      Text(order.order_status),
                   ],
                 ),
-                Text('${order.otime}'),
+                Text(order.otime),
               ],
             ),
             children: groupedOrdersByTime[order.ordno]!.map((order) {
               return ListTile(
-                title: Text('${order.itemnm}'),
+                title: Text(order.itemnm),
                 trailing: Text(order.qty.isGreaterThan(1)
                     ? '\$${(order.itmprice)} X ${order.qty}= \$${(order.itmprice) * order.qty}'
                     : "\$${order.itmprice}"),
